@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">Barber</string>
+    <!-- Alert Text -->
+    <string name="ok">OK</string>
+    <string name="cancel_alert">Cancel</string>
+    <!-- Navigation -->
+    <string name="nav_appointments">Appointments</string>
+    <string name="nav_earnings">Earnings</string>
+    <string name="nav_pricing">Pricing</string>
+
+    <!-- AppointmentListScreen -->
+    <string name="appointments_title">My Appointments</string>
+    <string name="add_appointment">Add Appointment</string>
+    <string name="no_appointments">No appointments for this date</string>
+    <string name="delete_appointment">Delete Appointment</string>
+    <string name="delete_confirmation">Are you sure you want to delete this appointment?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="completed">Completed</string>
+
+    <!-- AddEditAppointmentScreen -->
+    <string name="new_appointment">New Appointment</string>
+    <string name="edit_appointment">Edit Appointment</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="select_service">Select Service</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="time_conflict">Time Conflict</string>
+    <string name="time_coflinct_description">This time slot is already booked. Please choose another time.</string>
+    <string name="time_conflict_current_apponitment">Existing Appointment Details:</string>
+    <string name="clint">Client:</string>
+    <string name="service">Service:</string>
+    <string name="time_add">Time:</string>
+    <!-- DailyEarningsScreen -->
+    <string name="daily_earnings">Daily Earnings</string>
+    <string name="total_earnings">Total Earnings</string>
+    <string name="completed_appointments">Completed Appointments</string>
+    <string name="appointment_earnings">Number of Appointments:</string>
+    <string name="pending_appointments">Pending Appointments</string>
+    <string name="time">Time</string>
+    <string name="price">Price</string>
+
+    <!-- PricingScreen -->
+    <string name="pricing_title">Service Prices</string>
+    <string name="edit_prices">Edit Prices</string>
+    <string name="service_name">Service Name</string>
+    <string name="update_price">Update Price</string>
+    <string name="operation_add_eror">Please enter an operation name</string>
+    <string name="add_new_opt">Add New Operation</string>
+    <string name="add_new_service">Add</string>
+
+    <string name="existing_appointments_for_date">Appointments for %s</string>
+</resources>

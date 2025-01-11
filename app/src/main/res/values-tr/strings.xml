@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">Berber</string>
+    <!-- Alert Text -->
+    <string name="ok">OK</string>
+    <string name="cancel_alert">Cancel</string>
+    <!-- Navigation -->
+    <string name="nav_appointments">Randevular</string>
+    <string name="nav_earnings">Kazançlar</string>
+    <string name="nav_pricing">Fiyatlar</string>
+
+    <!-- AppointmentListScreen -->
+    <string name="appointments_title">Randevularım</string>
+    <string name="add_appointment">Randevu Ekle</string>
+    <string name="no_appointments">Bu tarihte randevu bulunmamaktadır</string>
+    <string name="delete_appointment">Randevu Silme</string>
+    <string name="delete_confirmation">Bu randevuyu silmek istediğinizden emin misiniz?</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
+    <string name="edit">Düzenle</string>
+    <string name="delete">Sil</string>
+    <string name="completed">Tamamlandı</string>
+
+    <!-- AddEditAppointmentScreen -->
+    <string name="new_appointment">Yeni Randevu</string>
+    <string name="edit_appointment">Randevu Düzenle</string>
+    <string name="customer_name">Müşteri Adı</string>
+    <string name="select_service">Hizmet Seçin</string>
+    <string name="select_date">Tarih Seçin</string>
+    <string name="select_time">Saat Seçin</string>
+    <string name="save">Kaydet</string>
+    <string name="cancel">İptal</string>
+    <string name="time_conflict">Randevu Zamanı Çakışması</string>
+    <string name="time_coflinct_description">Bu zamanda bir başka randevunuz vardır. Lütfen başka bir saat seçin.</string>
+    <string name="time_conflict_current_apponitment">Çakışan Randevu Detay</string>
+    <string name="clint">Müşteri Adı:</string>
+    <string name="service">Verilen Hizmet:</string>7
+    <string name="time_add">Zamanı:</string>
+    <!-- DailyEarningsScreen -->
+    <string name="daily_earnings">Günlük Kazanç</string>
+    <string name="total_earnings">Toplam Kazanç</string>
+    <string name="completed_appointments">Tamamlanan Randevular</string>
+    <string name="appointment_earnings">Randevu Sayısı:</string>
+    <string name="pending_appointments">Bekleyen Randevular</string>
+    <string name="time">Saat</string>
+    <string name="price">💸Fiyat</string>
+
+    <!-- PricingScreen -->
+    <string name="pricing_title">Hizmet Fiyatları</string>
+    <string name="edit_prices">Fiyatları Düzenle</string>
+    <string name="service_name">Hizmet Adı</string>
+    <string name="update_price">Fiyat Güncelle</string>
+    <string name="operation_add_eror">Lütfen İşlem Adını Girin</string>
+    <string name="add_new_opt">Yeni İşlem Ekle</string>
+    <string name="add_new_service">Ekle</string>
+
+    <string name="existing_appointments_for_date">%s Tarihindeki Randevular</string>
+</resources> 
