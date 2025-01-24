@@ -218,7 +218,7 @@ private fun AppointmentCard(
                 .fillMaxWidth()
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -228,11 +228,13 @@ private fun AppointmentCard(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.tertiary
                     )
+                    Spacer(modifier = Modifier.padding(vertical = 5.dp))
                     Text(
                         text = "➡\uFE0F ${appointment.operation}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.tertiary
                     )
+                   Spacer(modifier = Modifier.padding(vertical = 5.dp))
                     Text(
                         text = "\uD83D\uDD51  ${LocalTime.parse(appointment.time).format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
                             LocalTime.parse(appointment.time).plusMinutes(30).format(DateTimeFormatter.ofPattern("HH:mm"))
