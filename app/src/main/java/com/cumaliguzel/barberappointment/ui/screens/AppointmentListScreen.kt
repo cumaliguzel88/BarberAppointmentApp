@@ -97,7 +97,7 @@ fun AppointmentListScreen(
                     Spacer(Modifier.padding(vertical = 10.dp))
                    Text(
                        text = stringResource(R.string.no_appointments),
-                       color = MaterialTheme.colorScheme.tertiary,
+                       color = MaterialTheme.colorScheme.primary,
                        textAlign = TextAlign.Center,
                        style = MaterialTheme.typography.bodyLarge,
                        fontWeight = FontWeight.Bold
