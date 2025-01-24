@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.cumaliguzel.barberappointment.R
+import com.cumaliguzel.barberappointment.ui.components.IOSStyleTimePicker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -295,37 +296,15 @@ fun AddEditAppointmentScreen(
         }
 
         if (showTimePicker) {
-            val timePickerState = rememberTimePickerState(
-                initialHour = selectedTime.hour,
-                initialMinute = selectedTime.minute,
-                is24Hour = true
-            )
-            
-            AlertDialog(
-                onDismissRequest = { showTimePicker = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            selectedTime = LocalTime.of(
-                                timePickerState.hour,
-                                timePickerState.minute
-                            )
-                            showTimePicker = false
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showTimePicker = false }) {
-                        Text("Cancel")
-                    }
-                },
-                text = {
-                    TimePicker(state = timePickerState)
+            IOSStyleTimePicker(
+                initialTime = selectedTime,
+                onTimeSelected = { time ->
+                    selectedTime = time
+                    showTimePicker = false
                 }
             )
         }
+
 
         if (showTimeConflictDialog) {
             AlertDialog(

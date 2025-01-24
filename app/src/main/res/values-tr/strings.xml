@@ -28,7 +28,7 @@
     <string name="select_date">Tarih Seçin</string>
     <string name="select_time">Saat Seçin</string>
     <string name="save">Kaydet</string>
-    <string name="cancel">İptal</string>
+    <string name="cancel">Güncelle</string>
     <string name="time_conflict">Randevu Zamanı Çakışması</string>
     <string name="time_coflinct_description">Bu zamanda bir başka randevunuz vardır. Lütfen başka bir saat seçin.</string>
     <string name="time_conflict_current_apponitment">Çakışan Randevu Detay</string>

@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.cumaliguzel.barberappointment.ui.navigation.AppNavigation
 import com.cumaliguzel.barberappointment.ui.navigation.BottomNavItem
 import com.cumaliguzel.barberappointment.ui.theme.BarberAppointmentTheme
+import com.cumaliguzel.barberappointment.ui.theme.ColorGray
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +44,19 @@ fun MainScreen() {
         bottomBar = {
             // Only show bottom bar on main screens
             if (currentRoute in items.map { it.route }) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ) {
                     items.forEach { item ->
                         NavigationBarItem(
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                                unselectedIconColor = MaterialTheme.colorScheme.tertiary,
+                                selectedTextColor = MaterialTheme.colorScheme.tertiary,
+                                unselectedTextColor = MaterialTheme.colorScheme.tertiary,
+                                indicatorColor = MaterialTheme.colorScheme.onSecondary,
+                            ),
+                            alwaysShowLabel = false,
                             icon = {
                                 Icon(
                                     painter = painterResource(id = item.iconRes),
