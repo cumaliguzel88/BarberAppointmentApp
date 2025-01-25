@@ -33,10 +33,10 @@ fun IOSStyleTimePicker(
     var selectedMinute by remember { mutableStateOf(initialTime.minute) }
 
     AlertDialog(
-        onDismissRequest = { /* Dialog kapanma işlemi */ },
+        onDismissRequest = { },
         confirmButton = {
             TextButton(onClick = { onTimeSelected(LocalTime.of(selectedHour, selectedMinute)) }) {
-                Text("Tamam")
+                Text("Tamam", style = MaterialTheme.typography.titleMedium)
             }
         },
         text = {
@@ -47,23 +47,20 @@ fun IOSStyleTimePicker(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Saat Picker
+
                 WheelPicker(
                     range = 0..23,
                     selectedValue = selectedHour,
                     onValueChange = { selectedHour = it },
-                    label = "Saat",
-
-
-
+                    label = "Saat"
                 )
-                // Ayrıcı
+
                 Text(
                     text = ":",
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
-                // Dakika Picker
+
                 WheelPicker(
                     range = 0..59,
                     selectedValue = selectedMinute,
@@ -93,9 +90,9 @@ fun WheelPicker(
             Text(
                 text = value.toString().padStart(2, '0'),
                 style = if (value == selectedValue) {
-                    MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+                    MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.primary)
                 } else {
-                    MaterialTheme.typography.bodyMedium
+                    MaterialTheme.typography.bodyLarge
                 },
                 modifier = Modifier
                     .clickable { onValueChange(value) }
@@ -104,3 +101,4 @@ fun WheelPicker(
         }
     }
 }
+
