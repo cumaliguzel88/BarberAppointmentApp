@@ -43,6 +43,10 @@
     <string name="pending_appointments">Bekleyen Randevular</string>
     <string name="time">Saat</string>
     <string name="price">💸Fiyat</string>
+    <string name="weekly_earnings">Haftalık Kazanç</string>
+    <string name="monthly_earnings">Aylık Kazanç</string>
+    <string name="weekly_total">Haftalık Toplam</string>
+    <string name="monthly_total">Aylık Toplam</string>
 
     <!-- PricingScreen -->
     <string name="pricing_title">Hizmet Fiyatları</string>

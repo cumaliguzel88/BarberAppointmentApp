@@ -46,4 +46,7 @@ class AppointmentRepository(
 
     suspend fun safeInsertCompletedAppointment(appointment: CompletedAppointment): Boolean =
         completedAppointmentDao.safeInsertCompletedAppointment(appointment)
+
+    fun getCompletedAppointmentsBetweenDates(startDate: String, endDate: String): Flow<List<CompletedAppointment>> =
+        completedAppointmentDao.getCompletedAppointmentsBetweenDates(startDate, endDate)
 } 

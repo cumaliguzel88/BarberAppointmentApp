@@ -1,6 +1,5 @@
 package com.cumaliguzel.barberappointment.ui.navigation
 
-import DailyEarningsScreen
 import OperationPricesScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

@@ -1,4 +1,4 @@
-import androidx.compose.foundation.background
+package com.cumaliguzel.barberappointment.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +22,8 @@ import com.cumaliguzel.barberappointment.util.CurrencyFormatter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.cumaliguzel.barberappointment.R
+import java.time.DayOfWeek
+import java.time.temporal.TemporalAdjusters
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,10 +52,17 @@ fun DailyEarningsScreen(
     val pendingAppointments = uniqueActiveAppointments.filter { it.status == "Pending" }
     val pendingEarnings = pendingAppointments.sumOf { it.price }
 
+    val weeklyEarnings by viewModel.getWeeklyEarnings().collectAsState(initial = 0.0)
+    val monthlyEarnings by viewModel.getMonthlyEarnings().collectAsState(initial = 0.0)
+    val weeklyAppointments by viewModel.getWeeklyAppointmentsCount().collectAsState(initial = 0)
+    val monthlyAppointments by viewModel.getMonthlyAppointmentsCount().collectAsState(initial = 0)
+
     Scaffold(
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
                 title = { Text(text = stringResource(R.string.daily_earnings), color = MaterialTheme.colorScheme.tertiary) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
@@ -161,6 +170,115 @@ fun DailyEarningsScreen(
                     DatePicker(state = datePickerState)
                 }
             }
+            //weekly earnings lbj never die :)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.onSecondary
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.weekly_earnings),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = stringResource(R.string.completed_appointments),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                            Text(
+                                text = "✂\uFE0F ${stringResource(R.string.appointment_earnings)} $weeklyAppointments",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = stringResource(R.string.weekly_total),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                            Text(
+                                text = CurrencyFormatter.formatPriceWithSpace(weeklyEarnings),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ımmm monthly earnings en seviğim en seviğim
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.onSecondary
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.monthly_earnings),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = stringResource(R.string.completed_appointments),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                            Text(
+                                text = "✂\uFE0F ${stringResource(R.string.appointment_earnings)} $monthlyAppointments",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = stringResource(R.string.monthly_total),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                            Text(
+                                text = CurrencyFormatter.formatPriceWithSpace(weeklyEarnings),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Appointments List
             LazyColumn(
@@ -274,5 +392,43 @@ private fun AppointmentCard(
             containerColor = if (appointment.status == "Completed") Color(0xFF90EE90) else MaterialTheme.colorScheme.surface
         )
     ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = appointment.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    Text(
+                        text = "✅ ${appointment.operation}  ➡\uFE0F  ${CurrencyFormatter.formatPriceWithSpace(appointment.price)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+                Checkbox(
+                    checked = appointment.status == "Completed",
+                    onCheckedChange = { isChecked ->
+                        if (isCheckboxEnabled) {
+                            onStatusChange(isChecked)
+                        }
+                    },
+                    enabled = isCheckboxEnabled
+                )
+            }
+            Text(
+                text = " ${stringResource(R.string.time)} ${LocalTime.parse(appointment.time).format(DateTimeFormatter.ofPattern("HH:mm"))}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+        }
     }
 }

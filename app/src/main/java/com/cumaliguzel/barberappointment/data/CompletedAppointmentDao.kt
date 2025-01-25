@@ -33,4 +33,7 @@ interface CompletedAppointmentDao {
         }
         return false
     }
+
+    @Query("SELECT * FROM completed_appointments WHERE date BETWEEN :startDate AND :endDate ORDER BY date ASC")
+    fun getCompletedAppointmentsBetweenDates(startDate: String, endDate: String): Flow<List<CompletedAppointment>>
 } 

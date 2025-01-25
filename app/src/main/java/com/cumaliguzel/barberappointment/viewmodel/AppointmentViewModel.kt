@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import com.cumaliguzel.barberappointment.data.CompletedAppointment
 import kotlinx.coroutines.Delay
+import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
+import java.time.DayOfWeek
 
 class AppointmentViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -43,7 +46,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
         
-        // Periyodik kontrol için coroutine başlat
+
         startAutoUpdateTimer()
     }
 
@@ -161,7 +164,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    // Periyodik kontrol için fonksiyon
+
     private fun startAutoUpdateTimer() {
         viewModelScope.launch {
             while (true) {
@@ -277,5 +280,57 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
                 // Hata durumunda gerekli işlemleri yapabilirsiniz
             }
         }
+    }
+
+    fun getWeeklyEarnings(): Flow<Double> = flow {
+        val currentDate = LocalDate.now()
+        val startOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val endOfWeek = startOfWeek.plusDays(6)
+        
+        val weeklyEarnings = repository.getCompletedAppointmentsBetweenDates(
+            startOfWeek.toString(),
+            endOfWeek.toString()
+        ).first().sumOf { it.price }
+        
+        emit(weeklyEarnings)
+    }
+
+    fun getMonthlyEarnings(): Flow<Double> = flow {
+        val currentDate = LocalDate.now()
+        val startOfMonth = currentDate.withDayOfMonth(1)
+        val endOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth())
+        
+        val monthlyEarnings = repository.getCompletedAppointmentsBetweenDates(
+            startOfMonth.toString(),
+            endOfMonth.toString()
+        ).first().sumOf { it.price }
+        
+        emit(monthlyEarnings)
+    }
+
+    fun getWeeklyAppointmentsCount(): Flow<Int> = flow {
+        val currentDate = LocalDate.now()
+        val startOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val endOfWeek = startOfWeek.plusDays(6)
+        
+        val count = repository.getCompletedAppointmentsBetweenDates(
+            startOfWeek.toString(),
+            endOfWeek.toString()
+        ).first().size
+        
+        emit(count)
+    }
+
+    fun getMonthlyAppointmentsCount(): Flow<Int> = flow {
+        val currentDate = LocalDate.now()
+        val startOfMonth = currentDate.withDayOfMonth(1)
+        val endOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth())
+        
+        val count = repository.getCompletedAppointmentsBetweenDates(
+            startOfMonth.toString(),
+            endOfMonth.toString()
+        ).first().size
+        
+        emit(count)
     }
 } 

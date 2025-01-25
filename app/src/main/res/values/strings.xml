@@ -43,6 +43,13 @@
     <string name="pending_appointments">Pending Appointments</string>
     <string name="time">Time</string>
     <string name="price">Price</string>
+    <string name="weekly_earnings">Weekly Earnings</string>
+    <string name="weekly_total">Weekly Total</string>
+    <string name="monthly_earnings">Monthly Earnings</string>
+    <string name="monthly_total">Monthly Total</string>
+
+
+
 
     <!-- PricingScreen -->
     <string name="pricing_title">Service Prices</string>
