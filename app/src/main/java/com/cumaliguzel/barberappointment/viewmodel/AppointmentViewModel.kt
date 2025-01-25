@@ -23,6 +23,12 @@ import kotlinx.coroutines.Delay
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 import java.time.DayOfWeek
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 
 class AppointmentViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -30,6 +36,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     private val operationPriceRepository: OperationPriceRepository
     private val workManager: WorkManager
     private val _operationPrices = MutableStateFlow<Map<String, Double>>(emptyMap())
+    private val context = application.applicationContext
 
     init {
         val database = AppDatabase.getDatabase(application)
@@ -38,7 +45,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
             database.completedAppointmentDao()
         )
         operationPriceRepository = OperationPriceRepository(database.operationPriceDao())
-        workManager = WorkManager.getInstance(application)
+        workManager = WorkManager.getInstance(context)
         
         viewModelScope.launch {
             operationPriceRepository.getAllOperationPrices().collect { prices ->
@@ -46,7 +53,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
         
-
+        createNotificationChannel()
         startAutoUpdateTimer()
     }
 
@@ -180,6 +187,23 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                "Randevu Bildirimleri",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Yaklaşan randevular için bildirimler"
+                enableLights(true)
+                enableVibration(true)
+            }
+
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     private fun scheduleNotification(appointment: Appointment) {
         try {
             val appointmentDateTime = LocalDateTime.parse(
@@ -191,30 +215,34 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
 
             if (delay.isNegative) return
 
+            val notificationDelay = delay.minusMinutes(15)
+            
+            val notificationData = workDataOf(
+                "appointmentId" to appointment.id,
+                "customerName" to appointment.name,
+                "operation" to appointment.operation,
+                "time" to appointment.time
+            )
+
             val notificationWork = OneTimeWorkRequestBuilder<AppointmentNotificationWorker>()
-                .setInitialDelay(delay.toMinutes(), TimeUnit.MINUTES)
-                .setInputData(
-                    workDataOf(
-                        AppointmentNotificationWorker.KEY_CUSTOMER_NAME to appointment.name,
-                        AppointmentNotificationWorker.KEY_OPERATION to appointment.operation,
-                        AppointmentNotificationWorker.KEY_TIME to appointment.time
-                    )
-                )
+                .setInitialDelay(notificationDelay.toMinutes(), TimeUnit.MINUTES)
+                .setInputData(notificationData)
+                .addTag("appointment_notification_${appointment.id}")
                 .build()
 
+            workManager.cancelAllWorkByTag("appointment_notification_${appointment.id}")
             workManager.enqueueUniqueWork(
-                "appointment_${appointment.id}",
+                "appointment_notification_${appointment.id}",
                 ExistingWorkPolicy.REPLACE,
                 notificationWork
             )
         } catch (e: Exception) {
-            // Handle date parsing errors
             e.printStackTrace()
         }
     }
 
     private fun cancelNotification(appointment: Appointment) {
-        workManager.cancelUniqueWork("appointment_${appointment.id}")
+        workManager.cancelAllWorkByTag("appointment_notification_${appointment.id}")
     }
 
     fun updateAppointmentStatus(appointment: Appointment, newStatus: String) {
@@ -332,5 +360,9 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
         ).first().size
         
         emit(count)
+    }
+
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "appointment_notifications"
     }
 } 

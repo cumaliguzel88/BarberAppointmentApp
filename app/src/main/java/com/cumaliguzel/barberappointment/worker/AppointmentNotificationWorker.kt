@@ -8,56 +8,34 @@ import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.cumaliguzel.barberappointment.R
+import com.cumaliguzel.barberappointment.viewmodel.AppointmentViewModel
 
 class AppointmentNotificationWorker(
-    private val context: Context,
-    params: WorkerParameters
-) : Worker(context, params) {
+    context: Context,
+    workerParams: WorkerParameters
+) : Worker(context, workerParams) {
 
     override fun doWork(): Result {
-        val customerName = inputData.getString(KEY_CUSTOMER_NAME) ?: return Result.failure()
-        val operation = inputData.getString(KEY_OPERATION) ?: return Result.failure()
-        val time = inputData.getString(KEY_TIME) ?: return Result.failure()
+        val appointmentId = inputData.getInt("appointmentId", -1)
+        val customerName = inputData.getString("customerName") ?: return Result.failure()
+        val operation = inputData.getString("operation") ?: return Result.failure()
+        val time = inputData.getString("time") ?: return Result.failure()
 
-        createNotificationChannel()
-        showNotification(customerName, operation, time)
-
+        showNotification(appointmentId, customerName, operation, time)
         return Result.success()
     }
 
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Appointment Reminders",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Notifications for upcoming appointments"
-            }
+    private fun showNotification(appointmentId: Int, customerName: String, operation: String, time: String) {
+        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            val notificationManager = context.getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun showNotification(customerName: String, operation: String, time: String) {
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(applicationContext, AppointmentViewModel.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Upcoming Appointment")
-            .setContentText("$customerName - $operation at $time")
+            .setContentTitle("Yaklaşan Randevu")
+            .setContentText("$customerName - $operation saat $time")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
 
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
-        notificationManager.notify(NOTIFICATION_ID, notification)
-    }
-
-    companion object {
-        const val KEY_CUSTOMER_NAME = "customer_name"
-        const val KEY_OPERATION = "operation"
-        const val KEY_TIME = "time"
-        private const val CHANNEL_ID = "appointment_reminders"
-        private const val NOTIFICATION_ID = 1
+        notificationManager.notify(appointmentId, notification)
     }
 } 
