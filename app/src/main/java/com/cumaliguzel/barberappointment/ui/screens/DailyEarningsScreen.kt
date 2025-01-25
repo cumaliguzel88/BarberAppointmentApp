@@ -389,7 +389,7 @@ private fun AppointmentCard(
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (appointment.status == "Completed") Color(0xFF90EE90) else MaterialTheme.colorScheme.surface
+            containerColor = if (appointment.status == "Completed") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
         )
     ) {
         Column(
