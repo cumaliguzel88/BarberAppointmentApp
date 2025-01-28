@@ -294,7 +294,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
                 operationPriceRepository.deleteOperationPrice(operation)
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Hata durumunda gerekli işlemleri yapabilirsiniz
+
             }
         }
     }
@@ -305,7 +305,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
                 operationPriceRepository.updateOperationPrice(operation, price)
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Hata durumunda gerekli işlemleri yapabilirsiniz
+
             }
         }
     }
@@ -324,16 +324,21 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun getMonthlyEarnings(): Flow<Double> = flow {
-        val currentDate = LocalDate.now()
-        val startOfMonth = currentDate.withDayOfMonth(1)
-        val endOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth())
-        
-        val monthlyEarnings = repository.getCompletedAppointmentsBetweenDates(
-            startOfMonth.toString(),
-            endOfMonth.toString()
-        ).first().sumOf { it.price }
-        
-        emit(monthlyEarnings)
+        try {
+            val currentDate = LocalDate.now()
+            val startOfMonth = currentDate.withDayOfMonth(1)
+            val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+            
+            val monthlyEarnings = repository.getCompletedAppointmentsBetweenDates(
+                startOfMonth.toString(),
+                endOfMonth.toString()
+            ).first().sumOf { it.price }
+            
+            emit(monthlyEarnings)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(0.0)
+        }
     }
 
     fun getWeeklyAppointmentsCount(): Flow<Int> = flow {
@@ -350,16 +355,21 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun getMonthlyAppointmentsCount(): Flow<Int> = flow {
-        val currentDate = LocalDate.now()
-        val startOfMonth = currentDate.withDayOfMonth(1)
-        val endOfMonth = currentDate.withDayOfMonth(currentDate.lengthOfMonth())
-        
-        val count = repository.getCompletedAppointmentsBetweenDates(
-            startOfMonth.toString(),
-            endOfMonth.toString()
-        ).first().size
-        
-        emit(count)
+        try {
+            val currentDate = LocalDate.now()
+            val startOfMonth = currentDate.withDayOfMonth(1)
+            val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+            
+            val count = repository.getCompletedAppointmentsBetweenDates(
+                startOfMonth.toString(),
+                endOfMonth.toString()
+            ).first().size
+            
+            emit(count)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(0)
+        }
     }
 
     companion object {
