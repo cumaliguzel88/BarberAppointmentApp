@@ -29,6 +29,8 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
+import android.util.Log
+import java.time.temporal.ChronoUnit
 
 class AppointmentViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -206,17 +208,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun scheduleNotification(appointment: Appointment) {
         try {
-            val appointmentDateTime = LocalDateTime.parse(
-                "${appointment.date}T${appointment.time}",
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
-            )
-            val currentDateTime = LocalDateTime.now()
-            val delay = Duration.between(currentDateTime, appointmentDateTime)
-
-            if (delay.isNegative) return
-
-            val notificationDelay = delay.minusMinutes(15)
-            
+            // Bildirim verilerini hazırla
             val notificationData = workDataOf(
                 "appointmentId" to appointment.id,
                 "customerName" to appointment.name,
@@ -224,20 +216,47 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
                 "time" to appointment.time
             )
 
+            // Randevu zamanını parse et
+            val appointmentDateTime = LocalDateTime.parse(
+                "${appointment.date}T${appointment.time}",
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+            )
+            
+            // Bildirim zamanını hesapla (randevu saatinden 5 dakika önce)
+            val notificationTime = appointmentDateTime.minusMinutes(5)
+            val currentTime = LocalDateTime.now()
+            
+            // Eğer bildirim zamanı geçmişse bildirim gönderme
+            if (notificationTime.isBefore(currentTime)) {
+                Log.d("Notification", "Bildirim zamanı geçmiş: ${appointment.name}")
+                return
+            }
+
+            // Bildirime kalan süreyi hesapla
+            val delayInSeconds = ChronoUnit.SECONDS.between(currentTime, notificationTime)
+
+            // Work request oluştur
             val notificationWork = OneTimeWorkRequestBuilder<AppointmentNotificationWorker>()
-                .setInitialDelay(notificationDelay.toMinutes(), TimeUnit.MINUTES)
+                .setInitialDelay(delayInSeconds, TimeUnit.SECONDS)
                 .setInputData(notificationData)
-                .addTag("appointment_notification_${appointment.id}")
+                .addTag("notification_${appointment.id}")
                 .build()
 
-            workManager.cancelAllWorkByTag("appointment_notification_${appointment.id}")
+            // Work Manager'a işi ekle
             workManager.enqueueUniqueWork(
-                "appointment_notification_${appointment.id}",
+                "notification_${appointment.id}",
                 ExistingWorkPolicy.REPLACE,
                 notificationWork
             )
+
+            // Debug için log
+            Log.d("Notification", "Bildirim planlandı: ${appointment.name}")
+            Log.d("Notification", "Randevu saati: ${appointmentDateTime}")
+            Log.d("Notification", "Bildirim saati: ${notificationTime}")
+            Log.d("Notification", "Kalan süre: ${delayInSeconds} saniye")
+            
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Notification", "Bildirim planlanırken hata: ${e.message}")
         }
     }
 
