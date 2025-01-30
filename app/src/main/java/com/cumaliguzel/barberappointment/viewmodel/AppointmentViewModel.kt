@@ -216,12 +216,21 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
                 "time" to appointment.time
             )
 
-            // Randevu zamanını parse et
-            val appointmentDateTime = LocalDateTime.parse(
-                "${appointment.date}T${appointment.time}",
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
-            )
-            
+            // Zaman bilgisindeki fazladan ":00" bilgisini kaldır
+            val cleanTime = appointment.time.split(":").take(2).joinToString(":")
+
+// Randevu zamanını parse et
+            val appointmentDateTime = try {
+                LocalDateTime.parse(
+                    "${appointment.date}T$cleanTime",
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+                )
+            } catch (e: Exception) {
+                Log.e("Notification", "Tarih parse hatası: ${appointment.date}T${appointment.time}", e)
+                return
+            }
+
+
             // Bildirim zamanını hesapla (randevu saatinden 5 dakika önce)
             val notificationTime = appointmentDateTime.minusMinutes(5)
             val currentTime = LocalDateTime.now()
