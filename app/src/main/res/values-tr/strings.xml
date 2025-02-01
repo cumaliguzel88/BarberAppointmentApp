@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Berber</string>
     <!-- Alert Text -->
-    <string name="ok">OK</string>
-    <string name="cancel_alert">Cancel</string>
+    <string name="ok">Tamam</string>
+    <string name="cancel_alert">İptal</string>
     <!-- Navigation -->
     <string name="nav_appointments">Randevular</string>
     <string name="nav_earnings">Kazançlar</string>
