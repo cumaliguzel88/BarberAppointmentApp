@@ -65,6 +65,7 @@ fun MainScreen() {
     val items = listOf(
         BottomNavItem.Appointments,
         BottomNavItem.DailyEarnings,
+        BottomNavItem.Statistics,
         BottomNavItem.Pricing
     )
 

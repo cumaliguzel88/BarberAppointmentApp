@@ -31,6 +31,10 @@ fun AppNavigation(
             )
         }
         
+        composable(BottomNavItem.Statistics.route) {
+            StatisticsScreen()
+        }
+        
         composable(BottomNavItem.Pricing.route) {
             OperationPricesScreen(
                 onNavigateBack = { navController.popBackStack() }

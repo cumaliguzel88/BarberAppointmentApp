@@ -19,6 +19,12 @@ sealed class BottomNavItem(
         iconRes = R.drawable.baseline_money_24
     )
 
+    data object Statistics : BottomNavItem(
+        route = "statistics",
+        title = "İstatistikler 📊",
+        iconRes = R.drawable.baseline_bar_chart_24
+    )
+
     data object Pricing : BottomNavItem(
         route = "operation-prices",
         title = "Fiyatlar 💵",

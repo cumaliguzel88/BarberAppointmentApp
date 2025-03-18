@@ -48,9 +48,6 @@
     <string name="monthly_earnings">Monthly Earnings</string>
     <string name="monthly_total">Monthly Total</string>
 
-
-
-
     <!-- PricingScreen -->
     <string name="pricing_title">Service Prices</string>
     <string name="edit_prices">Edit Prices</string>
@@ -61,4 +58,9 @@
     <string name="add_new_service">Add</string>
 
     <string name="existing_appointments_for_date">Appointments for %s</string>
+
+    <!-- Statistics Screen -->
+    <string name="statistics_title">İstatistikler</string>
+    <string name="today_stats">Bugünkü Tamamlanan Randevular</string>
+    <string name="weekly_stats">Haftalık Randevu İstatistikleri</string>
 </resources>

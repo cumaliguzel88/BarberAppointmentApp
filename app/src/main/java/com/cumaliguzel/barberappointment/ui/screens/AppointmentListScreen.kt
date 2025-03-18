@@ -92,16 +92,26 @@ fun AppointmentListScreen(
             }.sortedBy { it.time }
 
             if (filteredAppointments.isEmpty()) {
-                Column(Modifier.fillMaxSize().padding(vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                    Image(painterResource(R.drawable.baerber_appoinment_no_yet), contentDescription = "", modifier = Modifier.size(300.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 10.dp), 
+                    horizontalAlignment = Alignment.CenterHorizontally, 
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.baerber_appoinment_no_yet), 
+                        contentDescription = "", 
+                        modifier = Modifier.size(300.dp)
+                    )
                     Spacer(Modifier.padding(vertical = 10.dp))
-                   Text(
-                       text = stringResource(R.string.no_appointments),
-                       color = MaterialTheme.colorScheme.primary,
-                       textAlign = TextAlign.Center,
-                       style = MaterialTheme.typography.bodyLarge,
-                       fontWeight = FontWeight.Bold
-                       )
+                    Text(
+                        text = stringResource(R.string.no_appointments),
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             } else {
                 LazyColumn(
