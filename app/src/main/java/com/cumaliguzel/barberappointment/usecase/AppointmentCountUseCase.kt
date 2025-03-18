@@ -2,8 +2,11 @@ package com.cumaliguzel.barberappointment.usecase
 
 import com.cumaliguzel.barberappointment.data.Appointment
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.Dispatchers
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 import java.time.DayOfWeek
@@ -32,10 +35,24 @@ class AppointmentCountUseCase(private val appointmentUseCase: AppointmentUseCase
             
             emit(count)
         } catch (e: Exception) {
-            Log.e("AppointmentCountUseCase", "Haftalık randevu sayısı hesaplanırken hata oluştu", e)
+            // Hata türünü mesajından kontrol et
+            if (e.message?.contains("composition") == true) {
+                Log.i("AppointmentCountUseCase", "Kompozisyon ile ilgili sorun: ${e.message}")
+            } else {
+                Log.e("AppointmentCountUseCase", "Haftalık randevu sayısı hesaplanırken hata oluştu", e)
+            }
             emit(0)
         }
-    }
+    }.flowOn(Dispatchers.IO)
+     .catch { e ->
+         // Akış seviyesinde hata yakalama
+         if (e.message?.contains("composition") == true) {
+             Log.i("AppointmentCountUseCase", "Kompozisyon akışı ile ilgili sorun: ${e.message}")
+         } else {
+             Log.e("AppointmentCountUseCase", "Haftalık randevu sayısı akışında hata: ${e.message}")
+         }
+         emit(0)
+     }
 
     fun getMonthlyAppointmentsCount(): Flow<Int> = flow {
         try {
@@ -61,8 +78,22 @@ class AppointmentCountUseCase(private val appointmentUseCase: AppointmentUseCase
             
             emit(count)
         } catch (e: Exception) {
-            Log.e("AppointmentCountUseCase", "Aylık randevu sayısı hesaplanırken hata oluştu", e)
+            // Hata türünü mesajından kontrol et
+            if (e.message?.contains("composition") == true) {
+                Log.i("AppointmentCountUseCase", "Kompozisyon ile ilgili sorun: ${e.message}")
+            } else {
+                Log.e("AppointmentCountUseCase", "Aylık randevu sayısı hesaplanırken hata oluştu", e)
+            }
             emit(0)
         }
-    }
+    }.flowOn(Dispatchers.IO)
+     .catch { e ->
+         // Akış seviyesinde hata yakalama
+         if (e.message?.contains("composition") == true) {
+             Log.i("AppointmentCountUseCase", "Kompozisyon akışı ile ilgili sorun: ${e.message}")
+         } else {
+             Log.e("AppointmentCountUseCase", "Aylık randevu sayısı akışında hata: ${e.message}")
+         }
+         emit(0)
+     }
 } 

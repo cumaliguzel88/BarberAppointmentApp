@@ -39,6 +39,9 @@ import com.cumaliguzel.barberappointment.usecase.AppointmentCountUseCase
 import com.cumaliguzel.barberappointment.usecase.StatusUpdateUseCase
 import com.cumaliguzel.barberappointment.usecase.OperationManagementUseCase
 import com.cumaliguzel.barberappointment.usecase.StatisticsUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.delay as coroutinesDelay
 
 class AppointmentViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -57,6 +60,8 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     // İstatistikler için selected date state
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
+
+    private var autoUpdateJob: kotlinx.coroutines.Job? = null
 
     init {
         val database = AppDatabase.getDatabase(application)
@@ -83,7 +88,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
         
-        notificationUseCase.createNotificationChannel()
+        notificationUseCase.createNotificationChannel(NOTIFICATION_CHANNEL_ID)
         startAutoUpdateTimer()
     }
 
@@ -162,17 +167,31 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
                         // Tarih ve zaman bilgisini birleştir
                         val dateTimeString = "${appointment.date}T${appointment.time}"
                         
-                        // Farklı format olasılıklarını deneyerek ayrıştır
-                        val appointmentDateTime = try {
-                            // İlk olarak saniyeli format (HH:mm:ss) için dene
-                            LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
-                        } catch (e: Exception) {
-                            try {
-                                // Saniyeli ve milisaniyeli format (HH:mm:ss.SSSSSS) için dene
-                                LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"))
-                            } catch (e: Exception) {
-                                // Son olarak basit format (HH:mm) için dene
+                        // Milisaniye içeren formatı işleyecek daha iyi bir yaklaşım
+                        val appointmentDateTime = when {
+                            dateTimeString.matches(Regex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")) -> {
+                                // Sadece saat ve dakika içeren format: HH:mm
                                 LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+                            }
+                            dateTimeString.matches(Regex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")) -> {
+                                // Saniye içeren format: HH:mm:ss
+                                LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+                            }
+                            dateTimeString.matches(Regex("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{1,9}")) -> {
+                                // Milisaniye içeren format: HH:mm:ss.SSS...
+                                try {
+                                    LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                } catch (e: Exception) {
+                                    // ISO formatı ile ayrıştırma başarısız olursa
+                                    val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                                    LocalDateTime.parse(dateTimeString.substring(0, Math.min(23, dateTimeString.length)), pattern)
+                                }
+                            }
+                            else -> {
+                                // Diğer tüm durumlar için en basit format ile dene
+                                Log.w("AppointmentViewModel", "Bilinmeyen zaman formatı: $dateTimeString, basit format deneniyor")
+                                LocalDateTime.parse("${appointment.date}T${appointment.time.split('.')[0]}", 
+                                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
                             }
                         }
                         
@@ -209,24 +228,36 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun startAutoUpdateTimer() {
-        viewModelScope.launch {
+        // Önceki job varsa iptal et
+        autoUpdateJob?.cancel()
+        
+        // Yeni job başlat
+        autoUpdateJob = viewModelScope.launch {
             try {
                 while (true) {
+                    if (!isActive) break
                     try {
                         val appointments = appointmentUseCase.getAllAppointments().first()
                         updateAppointmentStatuses(appointments)
                         // 5 dakika bekle
-                        kotlinx.coroutines.delay(5 * 60 * 1000L)
+                        coroutinesDelay(5 * 60 * 1000L)
                     } catch (e: Exception) {
                         Log.e("AppointmentViewModel", "Error in auto update timer", e)
                         // Hata durumunda da bekleyelim, sürekli hata log'u oluşturmayalım
-                        kotlinx.coroutines.delay(30 * 1000L) // 30 saniye bekle
+                        coroutinesDelay(30 * 1000L) // 30 saniye bekle
                     }
                 }
             } catch (e: Exception) {
                 Log.e("AppointmentViewModel", "Critical error in auto update timer", e)
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // ViewModel temizlendiğinde auto update job'ı iptal et
+        autoUpdateJob?.cancel()
+        Log.d("AppointmentViewModel", "ViewModel cleared, auto update job cancelled")
     }
 
     fun updateAppointmentStatus(appointment: Appointment, newStatus: String) {

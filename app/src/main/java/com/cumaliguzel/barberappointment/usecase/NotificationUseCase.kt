@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -19,20 +20,37 @@ import java.util.concurrent.TimeUnit
 
 class NotificationUseCase(private val context: Context, private val workManager: WorkManager) {
 
-    fun createNotificationChannel() {
+    /**
+     * Bildirim kanalı oluşturur. Bu metod sadece Android O (API 26) ve üzeri sürümlerde 
+     * bildirim kanalı oluşturur, daha eski sürümlerde herhangi bir işlem yapmaz.
+     */
+    fun createNotificationChannel(channelId: String) {
+        // Bildirim kanalları Android 8.0 (API 26) ve üzerinde gereklidir
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                "Randevu Bildirimleri",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Yaklaşan randevular için bildirimler"
-                enableLights(true)
-                enableVibration(true)
+            try {
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                
+                // Kanal zaten mevcut mu kontrol et
+                if (notificationManager.getNotificationChannel(channelId) == null) {
+                    Log.d("NotificationUseCase", "Bildirim kanalı oluşturuluyor: $channelId")
+                    val channel = NotificationChannel(
+                        channelId,
+                        "Randevu Bildirimleri",
+                        NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        description = "Yaklaşan randevular için bildirimler"
+                        enableLights(true)
+                        enableVibration(true)
+                    }
+                    notificationManager.createNotificationChannel(channel)
+                } else {
+                    Log.d("NotificationUseCase", "Bildirim kanalı zaten mevcut: $channelId")
+                }
+            } catch (e: Exception) {
+                Log.e("NotificationUseCase", "Bildirim kanalı oluşturulurken hata: ${e.message}")
             }
-
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        } else {
+            Log.d("NotificationUseCase", "Android 8.0 altında bildirim kanalı gerekmez")
         }
     }
 

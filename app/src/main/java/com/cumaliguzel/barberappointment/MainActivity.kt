@@ -22,6 +22,11 @@ import com.cumaliguzel.barberappointment.ui.navigation.AppNavigation
 import com.cumaliguzel.barberappointment.ui.navigation.BottomNavItem
 import com.cumaliguzel.barberappointment.ui.theme.BarberAppointmentTheme
 import com.cumaliguzel.barberappointment.ui.theme.ColorGray
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.provider.Settings
+import android.util.Log
 
 class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
@@ -39,7 +44,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
+        // Android 13+ (TIRAMISU) için POST_NOTIFICATIONS izni kontrolü
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -48,6 +53,11 @@ class MainActivity : ComponentActivity() {
             ) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
+        } 
+        // Android 10 ve altı (API 29 ve altı) için
+        else {
+            // Android 8.0+ için bildirim kanalı izinlerini kontrol et
+            checkNotificationPermissions()
         }
 
         setContent {
@@ -55,6 +65,56 @@ class MainActivity : ComponentActivity() {
                 MainScreen()
             }
         }
+    }
+    
+    private fun checkNotificationPermissions() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        
+        // Android 8.0+ (API 26+) için bildirim kanalı ayarları kontrolü
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!notificationManager.areNotificationsEnabled()) {
+                // Bildirimler devre dışı bırakılmışsa, kullanıcıyı bildir ve ayarlara yönlendir
+                showNotificationPermissionToast()
+            }
+        } else {
+            // Android 8.0 öncesi sürümler için
+            try {
+                val enabled = notificationManager.areNotificationsEnabled()
+                if (!enabled) {
+                    showNotificationPermissionToast()
+                }
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Bildirim izni kontrolünde hata: ${e.message}")
+            }
+        }
+    }
+    
+    private fun showNotificationPermissionToast() {
+        val toast = Toast.makeText(
+            this,
+            "Bildirimlere izin vermeniz gerekiyor. Ayarlar'a gitmek için tıklayın.",
+            Toast.LENGTH_LONG
+        )
+        toast.show()
+        
+        // Ayrı bir tıklanabilir mekanizma oluştur
+        val handler = android.os.Handler(mainLooper)
+        handler.postDelayed({
+            openNotificationSettings()
+        }, 3000) // 3 saniye sonra ayarları aç
+    }
+    
+    private fun openNotificationSettings() {
+        val intent = Intent()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+        } else {
+            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            intent.putExtra("app_package", packageName)
+            intent.putExtra("app_uid", applicationInfo.uid)
+        }
+        startActivity(intent)
     }
 }
 
