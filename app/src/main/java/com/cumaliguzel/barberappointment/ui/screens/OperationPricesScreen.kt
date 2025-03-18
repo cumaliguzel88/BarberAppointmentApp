@@ -16,14 +16,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cumaliguzel.barberappointment.viewmodel.AppointmentViewModel
 import androidx.compose.ui.Alignment
 import com.cumaliguzel.barberappointment.ui.components.CustomSnackbar
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.delay
 import com.cumaliguzel.barberappointment.util.CurrencyFormatter
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import com.cumaliguzel.barberappointment.R
 

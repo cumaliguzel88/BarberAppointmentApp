@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -20,6 +19,11 @@ import java.util.concurrent.TimeUnit
 
 class NotificationUseCase(private val context: Context, private val workManager: WorkManager) {
 
+    companion object {
+        private const val TAG = "NotificationUseCase"
+        const val NOTIFICATION_CHANNEL_ID = "appointment_notifications"
+    }
+
     /**
      * Bildirim kanalı oluşturur. Bu metod sadece Android O (API 26) ve üzeri sürümlerde 
      * bildirim kanalı oluşturur, daha eski sürümlerde herhangi bir işlem yapmaz.
@@ -32,7 +36,7 @@ class NotificationUseCase(private val context: Context, private val workManager:
                 
                 // Kanal zaten mevcut mu kontrol et
                 if (notificationManager.getNotificationChannel(channelId) == null) {
-                    Log.d("NotificationUseCase", "Bildirim kanalı oluşturuluyor: $channelId")
+                    Log.d(TAG, "Bildirim kanalı oluşturuluyor: $channelId")
                     val channel = NotificationChannel(
                         channelId,
                         "Randevu Bildirimleri",
@@ -44,13 +48,13 @@ class NotificationUseCase(private val context: Context, private val workManager:
                     }
                     notificationManager.createNotificationChannel(channel)
                 } else {
-                    Log.d("NotificationUseCase", "Bildirim kanalı zaten mevcut: $channelId")
+                    Log.d(TAG, "Bildirim kanalı zaten mevcut: $channelId")
                 }
             } catch (e: Exception) {
-                Log.e("NotificationUseCase", "Bildirim kanalı oluşturulurken hata: ${e.message}")
+                Log.e(TAG, "Bildirim kanalı oluşturulurken hata: ${e.message}")
             }
         } else {
-            Log.d("NotificationUseCase", "Android 8.0 altında bildirim kanalı gerekmez")
+            Log.d(TAG, "Android 8.0 altında bildirim kanalı gerekmez")
         }
     }
 
@@ -63,7 +67,8 @@ class NotificationUseCase(private val context: Context, private val workManager:
                 "time" to appointment.time
             )
 
-            val cleanTime = appointment.time.split(":").take(2).joinToString(":")
+            // Temiz zaman formatını al (milisaniye olmadan)
+            val cleanTime = getCleanTime(appointment.time)
 
             val appointmentDateTime = try {
                 LocalDateTime.parse(
@@ -71,7 +76,7 @@ class NotificationUseCase(private val context: Context, private val workManager:
                     DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
                 )
             } catch (e: Exception) {
-                Log.e("Notification", "Tarih parse hatası: ${appointment.date}T${appointment.time}", e)
+                Log.e(TAG, "Tarih parse hatası: ${appointment.date}T${appointment.time}", e)
                 return
             }
 
@@ -79,7 +84,7 @@ class NotificationUseCase(private val context: Context, private val workManager:
             val currentTime = LocalDateTime.now()
 
             if (notificationTime.isBefore(currentTime)) {
-                Log.d("Notification", "Bildirim zamanı geçmiş: ${appointment.name}")
+                Log.d(TAG, "Bildirim zamanı geçmiş: ${appointment.name}")
                 return
             }
 
@@ -97,21 +102,39 @@ class NotificationUseCase(private val context: Context, private val workManager:
                 notificationWork
             )
 
-            Log.d("Notification", "Bildirim planlandı: ${appointment.name}")
-            Log.d("Notification", "Randevu saati: ${appointmentDateTime}")
-            Log.d("Notification", "Bildirim saati: ${notificationTime}")
-            Log.d("Notification", "Kalan süre: ${delayInSeconds} saniye")
+            Log.d(TAG, "Bildirim planlandı: ${appointment.name}")
+            Log.d(TAG, "Randevu saati: ${appointmentDateTime}")
+            Log.d(TAG, "Bildirim saati: ${notificationTime}")
+            Log.d(TAG, "Kalan süre: ${delayInSeconds} saniye")
 
         } catch (e: Exception) {
-            Log.e("Notification", "Bildirim planlanırken hata: ${e.message}")
+            Log.e(TAG, "Bildirim planlanırken hata: ${e.message}", e)
+        }
+    }
+
+    private fun getCleanTime(time: String): String {
+        return try {
+            // Önce milisaniye veya saniye kısmını temizleyelim
+            val parts = time.split(":")
+            if (parts.size >= 2) {
+                // Sadece saat ve dakika kısmını alalım (HH:mm)
+                "${parts[0]}:${parts[1]}"
+            } else {
+                // Tam bir saat:dakika:saniye formatında değilse, olduğu gibi dönelim
+                time
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Zaman temizlenirken hata: $time", e)
+            time // Hata durumunda orijinal değeri döndür
         }
     }
 
     fun cancelNotification(appointment: Appointment) {
-        workManager.cancelAllWorkByTag("notification_${appointment.id}")
-    }
-
-    companion object {
-        const val NOTIFICATION_CHANNEL_ID = "appointment_notifications"
+        try {
+            workManager.cancelAllWorkByTag("notification_${appointment.id}")
+            Log.d(TAG, "Bildirim iptal edildi: ${appointment.id}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Bildirim iptal edilirken hata: ${e.message}", e)
+        }
     }
 } 

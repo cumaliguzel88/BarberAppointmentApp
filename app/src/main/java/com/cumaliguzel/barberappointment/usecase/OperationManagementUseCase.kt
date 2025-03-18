@@ -1,7 +1,6 @@
 package com.cumaliguzel.barberappointment.usecase
 
 import com.cumaliguzel.barberappointment.repository.OperationPriceRepository
-import kotlinx.coroutines.flow.first
 import java.lang.Exception
 
 class OperationManagementUseCase(private val operationPriceRepository: OperationPriceRepository) {

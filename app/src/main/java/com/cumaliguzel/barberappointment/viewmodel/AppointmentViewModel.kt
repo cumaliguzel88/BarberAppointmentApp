@@ -12,25 +12,11 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import androidx.work.*
-import com.cumaliguzel.barberappointment.data.OperationPrice
-import java.util.concurrent.TimeUnit
-import java.time.Duration
-import com.cumaliguzel.barberappointment.worker.AppointmentNotificationWorker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import com.cumaliguzel.barberappointment.data.CompletedAppointment
-import kotlinx.coroutines.Delay
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
-import java.time.DayOfWeek
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
 import android.util.Log
-import java.time.temporal.ChronoUnit
 import com.cumaliguzel.barberappointment.usecase.AppointmentUseCase
 import com.cumaliguzel.barberappointment.usecase.OperationPriceUseCase
 import com.cumaliguzel.barberappointment.usecase.NotificationUseCase
@@ -39,7 +25,6 @@ import com.cumaliguzel.barberappointment.usecase.AppointmentCountUseCase
 import com.cumaliguzel.barberappointment.usecase.StatusUpdateUseCase
 import com.cumaliguzel.barberappointment.usecase.OperationManagementUseCase
 import com.cumaliguzel.barberappointment.usecase.StatisticsUseCase
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.delay as coroutinesDelay
 

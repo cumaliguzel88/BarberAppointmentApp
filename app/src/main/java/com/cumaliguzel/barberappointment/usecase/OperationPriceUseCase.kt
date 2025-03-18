@@ -3,7 +3,6 @@ package com.cumaliguzel.barberappointment.usecase
 import com.cumaliguzel.barberappointment.data.OperationPrice
 import com.cumaliguzel.barberappointment.repository.OperationPriceRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 
 class OperationPriceUseCase(val operationPriceRepository: OperationPriceRepository) {

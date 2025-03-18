@@ -3,9 +3,7 @@ package com.cumaliguzel.barberappointment.usecase
 import com.cumaliguzel.barberappointment.data.Appointment
 import com.cumaliguzel.barberappointment.data.CompletedAppointment
 import com.cumaliguzel.barberappointment.repository.AppointmentRepository
-import kotlinx.coroutines.flow.first
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class StatusUpdateUseCase(private val appointmentRepository: AppointmentRepository) {
 

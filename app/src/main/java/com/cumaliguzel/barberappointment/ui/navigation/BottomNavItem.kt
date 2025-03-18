@@ -21,7 +21,7 @@ sealed class BottomNavItem(
 
     data object Statistics : BottomNavItem(
         route = "statistics",
-        title = "İstatistikler 📊",
+        title = "İstatistikler",
         iconRes = R.drawable.baseline_bar_chart_24
     )
 

@@ -35,12 +35,6 @@ class AppointmentRepository(
     suspend fun insertCompletedAppointment(appointment: CompletedAppointment) =
         completedAppointmentDao.insertCompletedAppointment(appointment)
 
-    fun getAllCompletedAppointments(): Flow<List<CompletedAppointment>> =
-        completedAppointmentDao.getAllCompletedAppointments()
-
-    suspend fun deleteCompletedAppointment(appointment: CompletedAppointment) =
-        completedAppointmentDao.deleteCompletedAppointment(appointment)
-
     suspend fun getCompletedAppointmentByOriginalId(originalId: Int): CompletedAppointment? =
         completedAppointmentDao.getCompletedAppointmentByOriginalId(originalId)
 

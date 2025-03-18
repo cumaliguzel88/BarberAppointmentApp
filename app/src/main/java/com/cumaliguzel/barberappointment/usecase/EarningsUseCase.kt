@@ -1,6 +1,6 @@
 package com.cumaliguzel.barberappointment.usecase
 
-import com.cumaliguzel.barberappointment.data.Appointment
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
