@@ -9,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -23,40 +24,31 @@ import com.cumaliguzel.barberappointment.ui.theme.BarberAppointmentTheme
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.Gravity
+import com.cumaliguzel.barberappointment.usecase.NotificationUseCase
+import androidx.work.WorkManager
 
 class MainActivity : ComponentActivity() {
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (!isGranted) {
-            Toast.makeText(
-                this,
-                "Bildirimleri görebilmek için izin vermeniz gerekiyor",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
+    private lateinit var notificationUseCase: NotificationUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Android 13+ (TIRAMISU) için POST_NOTIFICATIONS izni kontrolü
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        } 
-        // Android 10 ve altı (API 29 ve altı) için
-        else {
-            // Android 8.0+ için bildirim kanalı izinlerini kontrol et
-            checkNotificationPermissions()
-        }
+        // WorkManager instance'ını almak
+        val workManager = WorkManager.getInstance(applicationContext)
+        
+        // NotificationUseCase oluştur
+        notificationUseCase = NotificationUseCase(applicationContext, workManager)
+        
+        // Bildirim kanalı oluştur
+        notificationUseCase.createNotificationChannel(NotificationUseCase.NOTIFICATION_CHANNEL_ID)
+        
+        // Bildirim izinlerini kontrol et
+        checkNotificationPermissions()
 
         setContent {
             BarberAppointmentTheme {
@@ -66,53 +58,94 @@ class MainActivity : ComponentActivity() {
     }
     
     private fun checkNotificationPermissions() {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        
-        // Android 8.0+ (API 26+) için bildirim kanalı ayarları kontrolü
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!notificationManager.areNotificationsEnabled()) {
-                // Bildirimler devre dışı bırakılmışsa, kullanıcıyı bildir ve ayarlara yönlendir
-                showNotificationPermissionToast()
-            }
-        } else {
-            // Android 8.0 öncesi sürümler için
-            try {
-                val enabled = notificationManager.areNotificationsEnabled()
-                if (!enabled) {
+        // Android 13+ için POST_NOTIFICATIONS izni gerekir
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // İzin zaten var
+                    Log.d("MainActivity", "✅ Bildirim izni mevcut (Android 13+)")
+                }
+                shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS) -> {
+                    // Kullanıcı daha önce izni reddetti, açıklama göster
+                    Log.d("MainActivity", "⚠️ Bildirim izni reddedilmiş (Android 13+)")
                     showNotificationPermissionToast()
                 }
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Bildirim izni kontrolünde hata: ${e.message}")
+                else -> {
+                    // İzni iste
+                    Log.d("MainActivity", "🔄 Bildirim izni isteniyor (Android 13+)")
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        100
+                    )
+                }
+            }
+        } else {
+            // Android 10 ve altı için
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (!notificationManager.areNotificationsEnabled()) {
+                    // Bildirimler devre dışı, kullanıcıyı ayarlara yönlendir
+                    Log.d("MainActivity", "⚠️ Bildirimler devre dışı (Android 10)")
+                    showNotificationPermissionToast()
+                } else {
+                    Log.d("MainActivity", "✅ Bildirimler etkin (Android 10)")
+                }
+            } else {
+                // Android 7 altı için izin kontrolü yapılamaz
+                Log.d("MainActivity", "ℹ️ Bildirim izni kontrol edilemiyor (Android <7)")
             }
         }
     }
     
     private fun showNotificationPermissionToast() {
-        val toast = Toast.makeText(
+        Toast.makeText(
             this,
-            "Bildirimlere izin vermeniz gerekiyor. Ayarlar'a gitmek için tıklayın.",
+            "Bildirimleri görebilmek için lütfen bildirim izinlerini etkinleştirin",
             Toast.LENGTH_LONG
-        )
-        toast.show()
+        ).show()
         
-        // Ayrı bir tıklanabilir mekanizma oluştur
-        val handler = android.os.Handler(mainLooper)
-        handler.postDelayed({
-            openNotificationSettings()
-        }, 3000) // 3 saniye sonra ayarları aç
+        // Ayarlar butonunu göster
+        Handler(Looper.getMainLooper()).postDelayed({
+            Toast.makeText(
+                this,
+                "Ayarları açmak için buraya tıklayın",
+                Toast.LENGTH_LONG
+            ).apply {
+                setGravity(Gravity.CENTER, 0, 0)
+                view?.setOnClickListener {
+                    openNotificationSettings()
+                    cancel()
+                }
+                show()
+            }
+        }, 3000)
     }
     
     private fun openNotificationSettings() {
-        val intent = Intent()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            intent.action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-        } else {
-            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
-            intent.putExtra("app_package", packageName)
-            intent.putExtra("app_uid", applicationInfo.uid)
+        notificationUseCase.openNotificationSettings()
+    }
+    
+    // İzin sonuçlarını işle
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // İzin verildi
+                Log.d("MainActivity", "Bildirim izni verildi")
+            } else {
+                // İzin reddedildi
+                showNotificationPermissionToast()
+            }
         }
-        startActivity(intent)
     }
 }
 

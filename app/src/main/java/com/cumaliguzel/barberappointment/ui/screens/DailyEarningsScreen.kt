@@ -267,7 +267,7 @@ fun DailyEarningsScreen(
                                 color = MaterialTheme.colorScheme.tertiary
                             )
                             Text(
-                                text = CurrencyFormatter.formatPriceWithSpace(weeklyEarnings),
+                                text = CurrencyFormatter.formatPriceWithSpace(monthlyEarnings),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.tertiary,
                                 fontWeight = FontWeight.Bold
