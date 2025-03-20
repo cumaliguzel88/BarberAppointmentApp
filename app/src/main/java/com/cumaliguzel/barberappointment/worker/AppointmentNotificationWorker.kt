@@ -136,7 +136,7 @@ class AppointmentNotificationWorker(
 
             // Yüksek öncelikli bildirim oluştur
             val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.barber_cut)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_MAX)

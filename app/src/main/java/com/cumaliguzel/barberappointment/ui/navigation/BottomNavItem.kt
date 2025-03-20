@@ -9,13 +9,13 @@ sealed class BottomNavItem(
 ) {
     data object Appointments : BottomNavItem(
         route = "appointments",
-        title = "Randevular ✂️",
+        title = "Randevular ",
         iconRes = R.drawable.baseline_date_range_24
     )
 
     data object DailyEarnings : BottomNavItem(
         route = "daily-earnings",
-        title = "Kazanç 💰",
+        title = "Kazanç ",
         iconRes = R.drawable.baseline_money_24
     )
 
@@ -27,7 +27,7 @@ sealed class BottomNavItem(
 
     data object Pricing : BottomNavItem(
         route = "operation-prices",
-        title = "Fiyatlar 💵",
+        title = "Fiyatlar ",
         iconRes = R.drawable.baseline_attach_money_24
     )
 }
