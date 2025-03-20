@@ -27,29 +27,46 @@ interface CompletedAppointmentDao {
 
     @Transaction
     suspend fun safeInsertCompletedAppointment(appointment: CompletedAppointment): Boolean {
-        // ID'ye göre kontrol et
-        val existingById = getCompletedAppointmentByOriginalId(appointment.originalAppointmentId)
-        if (existingById != null) {
-            Log.d("CompletedAppointmentDao", "ID'ye göre randevu zaten var: ${appointment.originalAppointmentId}")
-            return false
+        try {
+            Log.d("CompletedAppointmentDao", "🔍 Tamamlanan randevu kontrolleri başlıyor - ID: ${appointment.originalAppointmentId}")
+
+            // 1. Original ID kontrolü
+            val existingById = getCompletedAppointmentByOriginalId(appointment.originalAppointmentId)
+            if (existingById != null) {
+                Log.w("CompletedAppointmentDao", "⚠️ Bu randevu zaten tamamlanmış olarak kaydedilmiş - Original ID: ${appointment.originalAppointmentId}")
+                return false
+            }
+
+            // 2. Aynı müşteri, tarih ve saat kontrolü
+            val existingSameDetails = getCompletedAppointmentByDetails(
+                appointment.date,
+                appointment.time,
+                appointment.name
+            )
+            if (existingSameDetails != null) {
+                Log.w("CompletedAppointmentDao", """
+                    ⚠️ Aynı detaylarla randevu mevcut:
+                    Müşteri: ${appointment.name}
+                    Tarih: ${appointment.date}
+                    Saat: ${appointment.time}
+                """.trimIndent())
+                return false
+            }
+
+            // 3. Güvenli ekleme işlemi
+            insertCompletedAppointment(appointment)
+            Log.d("CompletedAppointmentDao", """
+                ✅ Yeni tamamlanan randevu başarıyla eklendi:
+                ID: ${appointment.originalAppointmentId}
+                Müşteri: ${appointment.name}
+                Tarih: ${appointment.date}
+                Saat: ${appointment.time}
+            """.trimIndent())
+            return true
+        } catch (e: Exception) {
+            Log.e("CompletedAppointmentDao", "💥 Randevu eklenirken hata oluştu", e)
+            throw e
         }
-        
-        // Aynı gün, saat ve müşteriye göre kontrol et
-        val existingSameDetails = getCompletedAppointmentByDetails(
-            appointment.date, 
-            appointment.time, 
-            appointment.name
-        )
-        
-        if (existingSameDetails != null) {
-            Log.d("CompletedAppointmentDao", "Aynı detaylarla randevu zaten var: ${appointment.date}, ${appointment.time}, ${appointment.name}")
-            return false
-        }
-        
-        // Hiçbir benzer kayıt yoksa ekle
-        insertCompletedAppointment(appointment)
-        Log.d("CompletedAppointmentDao", "Yeni tamamlanmış randevu eklendi: ${appointment.originalAppointmentId}")
-        return true
     }
 
     @Query("SELECT * FROM completed_appointments WHERE date BETWEEN :startDate AND :endDate ORDER BY date ASC")

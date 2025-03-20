@@ -9,9 +9,17 @@ import android.util.Log
 class StatusUpdateUseCase(private val appointmentRepository: AppointmentRepository) {
 
     suspend fun updateAppointmentStatus(appointment: Appointment, newStatus: String) {
-        if (appointment.status != newStatus) {
+        try {
+            Log.d("StatusUpdateUseCase", "🔄 Randevu durumu güncelleme başladı - ID: ${appointment.id}")
+
+            if (appointment.status == newStatus) {
+                Log.d("StatusUpdateUseCase", "ℹ️ Randevu zaten '$newStatus' durumunda - ID: ${appointment.id}")
+                return
+            }
+
             if (newStatus == "Completed") {
                 val existingCompletedAppointment = appointmentRepository.getCompletedAppointmentByOriginalId(appointment.id)
+                
                 if (existingCompletedAppointment == null) {
                     val completedAppointment = CompletedAppointment(
                         originalAppointmentId = appointment.id,
@@ -22,22 +30,26 @@ class StatusUpdateUseCase(private val appointmentRepository: AppointmentReposito
                         price = appointment.price,
                         completedAt = LocalDateTime.now().toString()
                     )
+
                     val inserted = appointmentRepository.safeInsertCompletedAppointment(completedAppointment)
-                    if (!inserted) {
-                        Log.d("StatusUpdateUseCase", "Randevu zaten tamamlanmış olarak kaydedilmiş: ${appointment.id}")
+                    if (inserted) {
+                        Log.d("StatusUpdateUseCase", "✅ Randevu tamamlandı olarak kaydedildi - ID: ${appointment.id}")
                     } else {
-                        Log.d("StatusUpdateUseCase", "Randevu tamamlandı olarak kaydedildi: ${appointment.id}")
+                        Log.w("StatusUpdateUseCase", "⚠️ Randevu tamamlandı olarak kaydedilemedi - ID: ${appointment.id}")
+                        return
                     }
                 } else {
-                    Log.d("StatusUpdateUseCase", "Bu randevu zaten tamamlanmış: ${appointment.id}")
+                    Log.d("StatusUpdateUseCase", "ℹ️ Randevu zaten tamamlanmış - ID: ${appointment.id}")
                 }
             }
-            
+
             val updatedAppointment = appointment.copy(status = newStatus)
             appointmentRepository.updateAppointment(updatedAppointment)
-            Log.d("StatusUpdateUseCase", "Randevu durumu güncellendi: ${appointment.id}, Yeni durum: $newStatus")
-        } else {
-            Log.d("StatusUpdateUseCase", "Randevu zaten '$newStatus' durumunda: ${appointment.id}")
+            Log.d("StatusUpdateUseCase", "✅ Randevu durumu güncellendi - ID: ${appointment.id}, Yeni durum: $newStatus")
+
+        } catch (e: Exception) {
+            Log.e("StatusUpdateUseCase", "💥 Randevu durumu güncellenirken hata oluştu - ID: ${appointment.id}", e)
+            throw e
         }
     }
 

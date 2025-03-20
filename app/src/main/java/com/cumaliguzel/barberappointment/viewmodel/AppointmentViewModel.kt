@@ -27,6 +27,7 @@ import com.cumaliguzel.barberappointment.usecase.OperationManagementUseCase
 import com.cumaliguzel.barberappointment.usecase.StatisticsUseCase
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.delay as coroutinesDelay
+import kotlinx.coroutines.CancellationException
 
 class AppointmentViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -213,27 +214,29 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun startAutoUpdateTimer() {
-        // Önceki job varsa iptal et
-        autoUpdateJob?.cancel()
+        autoUpdateJob?.cancel() // Varolan işi iptal et
         
-        // Yeni job başlat
         autoUpdateJob = viewModelScope.launch {
             try {
-                while (true) {
-                    if (!isActive) break
+                while (isActive) {
                     try {
                         val appointments = appointmentUseCase.getAllAppointments().first()
                         updateAppointmentStatuses(appointments)
-                        // 5 dakika bekle
-                        coroutinesDelay(5 * 60 * 1000L)
+                        coroutinesDelay(5 * 60 * 1000L) // 5 dakika bekle
                     } catch (e: Exception) {
-                        Log.e("AppointmentViewModel", "Error in auto update timer", e)
-                        // Hata durumunda da bekleyelim, sürekli hata log'u oluşturmayalım
-                        coroutinesDelay(30 * 1000L) // 30 saniye bekle
+                        if (e is CancellationException) {
+                            Log.d("AppointmentViewModel", "🔄 Otomatik güncelleme normal şekilde durduruldu")
+                            break
+                        } else {
+                            Log.e("AppointmentViewModel", "❌ Otomatik güncelleme hatası", e)
+                            coroutinesDelay(30 * 1000L) // Hata durumunda 30 saniye bekle
+                        }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("AppointmentViewModel", "Critical error in auto update timer", e)
+                if (e !is CancellationException) {
+                    Log.e("AppointmentViewModel", "💥 Kritik güncelleme hatası", e)
+                }
             }
         }
     }

@@ -142,24 +142,28 @@ class NotificationUseCase(private val context: Context, private val workManager:
 
             val delayInSeconds = ChronoUnit.SECONDS.between(currentTime, notificationTime)
 
-            val notificationWork = OneTimeWorkRequestBuilder<AppointmentNotificationWorker>()
-                .setInitialDelay(delayInSeconds, TimeUnit.SECONDS)
+            val workRequest = OneTimeWorkRequestBuilder<AppointmentNotificationWorker>()
                 .setInputData(notificationData)
-                .addTag("notification_${appointment.id}")
+                .setInitialDelay(delayInSeconds, TimeUnit.SECONDS)
                 .build()
 
             workManager.enqueueUniqueWork(
                 "notification_${appointment.id}",
                 ExistingWorkPolicy.REPLACE,
-                notificationWork
+                workRequest
             )
 
-            Log.d(TAG, "📅 Bildirim planlandı: ${appointment.name} [ID:${appointment.id}]")
-            Log.d(TAG, "⏰ Randevu saati: ${appointmentDateTime}")
-            Log.d(TAG, "🔔 Bildirim saati: ${notificationTime}")
-            Log.d(TAG, "⏳ Kalan süre: ${delayInSeconds} saniye")
+            Log.d(TAG, """
+                🎯 Bildirim iş kaydı oluşturuldu:
+                ID: ${appointment.id}
+                Müşteri: ${appointment.name}
+                Tarih: ${appointment.date}
+                Saat: ${appointment.time}
+                Gecikme: $delayInSeconds saniye
+            """.trimIndent())
+
         } catch (e: Exception) {
-            Log.e(TAG, "Bildirim planlanırken hata: ${e.message}", e)
+            Log.e(TAG, "💥 Bildirim planlanırken hata oluştu", e)
         }
     }
 
