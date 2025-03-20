@@ -22,8 +22,8 @@ class AppointmentRepository(
     fun getAppointmentsByDate(date: String): Flow<List<Appointment>> =
         appointmentDao.getAppointmentsByDate(date)
     
-    suspend fun insertAppointment(appointment: Appointment) {
-        appointmentDao.insertAppointment(appointment)
+    suspend fun insertAppointment(appointment: Appointment): Long {
+        return appointmentDao.insertAppointment(appointment)
     }
     
     suspend fun updateAppointment(appointment: Appointment) {

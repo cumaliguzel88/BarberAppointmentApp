@@ -106,9 +106,11 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     fun addAppointment(appointment: Appointment) {
         viewModelScope.launch {
             try {
-                appointmentUseCase.insertAppointment(appointment)
-                notificationUseCase.scheduleNotification(appointment)
-                Log.d("AppointmentViewModel", "✅ Randevu eklendi: ${appointment.name}")
+                // Güncellenmiş randevu nesnesini al (yeni ID'li)
+                val updatedAppointment = appointmentUseCase.insertAppointment(appointment)
+                // ID'si güncellenmiş randevu ile bildirim planla
+                notificationUseCase.scheduleNotification(updatedAppointment)
+                Log.d("AppointmentViewModel", "✅ Randevu eklendi: ${updatedAppointment.name}")
             } catch (e: Exception) {
                 Log.e("AppointmentViewModel", "💥 Randevu eklenirken hata: ${e.message}", e)
             }

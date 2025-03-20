@@ -13,7 +13,7 @@ interface AppointmentDao {
     fun getAppointmentsByDate(date: String): Flow<List<Appointment>>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAppointment(appointment: Appointment)
+    suspend fun insertAppointment(appointment: Appointment): Long
     
     @Update
     suspend fun updateAppointment(appointment: Appointment)

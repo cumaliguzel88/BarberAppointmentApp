@@ -50,12 +50,16 @@ class AppointmentUseCase(
                 emit(emptyList())
             }
 
-    suspend fun insertAppointment(appointment: Appointment) {
+    suspend fun insertAppointment(appointment: Appointment): Appointment {
         try {
-            appointmentRepository.insertAppointment(appointment)
-            Log.d(TAG, "✅ Yeni randevu eklendi: ${appointment.name} (${appointment.date}, ${appointment.time})")
+            val newId = appointmentRepository.insertAppointment(appointment)
+            // Yeni randevu nesnesi oluştur (ID ile güncellendi)
+            val updatedAppointment = appointment.copy(id = newId.toInt())
+            Log.d(TAG, "✅ Yeni randevu eklendi: ${updatedAppointment.name} (${updatedAppointment.date}, ${updatedAppointment.time}) ID: ${updatedAppointment.id}")
+            return updatedAppointment
         } catch (e: Exception) {
             Log.e(TAG, "💥 Randevu eklenirken hata: ${e.message}", e)
+            return appointment
         }
     }
 
