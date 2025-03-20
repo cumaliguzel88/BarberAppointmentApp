@@ -33,19 +33,15 @@ import com.cumaliguzel.barberappointment.usecase.NotificationUseCase
 import androidx.work.WorkManager
 
 class MainActivity : ComponentActivity() {
-    private lateinit var notificationUseCase: NotificationUseCase
+    private val notificationUseCase: NotificationUseCase by lazy {
+        (application as BarberApplication).notificationUseCase
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // WorkManager instance'ını almak
-        val workManager = WorkManager.getInstance(applicationContext)
-        
-        // NotificationUseCase oluştur
-        notificationUseCase = NotificationUseCase(applicationContext, workManager)
-        
         // Bildirim kanalı oluştur
-        notificationUseCase.createNotificationChannel(NotificationUseCase.NOTIFICATION_CHANNEL_ID)
+        notificationUseCase.createNotificationChannel()
         
         // Bildirim izinlerini kontrol et
         checkNotificationPermissions()
@@ -58,46 +54,23 @@ class MainActivity : ComponentActivity() {
     }
     
     private fun checkNotificationPermissions() {
-        // Android 13+ için POST_NOTIFICATIONS izni gerekir
+        if (!notificationUseCase.areNotificationsEnabled()) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                showNotificationPermissionDialog()
+            }, 1000)
+        }
+    }
+    
+    private fun showNotificationPermissionDialog() {
+        // Kullanıcıya bildirim izni isteme diyaloğu göster
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // İzin zaten var
-                    Log.d("MainActivity", "✅ Bildirim izni mevcut (Android 13+)")
-                }
-                shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS) -> {
-                    // Kullanıcı daha önce izni reddetti, açıklama göster
-                    Log.d("MainActivity", "⚠️ Bildirim izni reddedilmiş (Android 13+)")
-                    showNotificationPermissionToast()
-                }
-                else -> {
-                    // İzni iste
-                    Log.d("MainActivity", "🔄 Bildirim izni isteniyor (Android 13+)")
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                        100
-                    )
-                }
-            }
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                100
+            )
         } else {
-            // Android 10 ve altı için
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                if (!notificationManager.areNotificationsEnabled()) {
-                    // Bildirimler devre dışı, kullanıcıyı ayarlara yönlendir
-                    Log.d("MainActivity", "⚠️ Bildirimler devre dışı (Android 10)")
-                    showNotificationPermissionToast()
-                } else {
-                    Log.d("MainActivity", "✅ Bildirimler etkin (Android 10)")
-                }
-            } else {
-                // Android 7 altı için izin kontrolü yapılamaz
-                Log.d("MainActivity", "ℹ️ Bildirim izni kontrol edilemiyor (Android <7)")
-            }
+            showNotificationPermissionToast()
         }
     }
     
@@ -140,9 +113,10 @@ class MainActivity : ComponentActivity() {
         if (requestCode == 100) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // İzin verildi
-                Log.d("MainActivity", "Bildirim izni verildi")
+                Log.d("MainActivity", "✅ Bildirim izni verildi")
             } else {
                 // İzin reddedildi
+                Log.d("MainActivity", "⚠️ Bildirim izni reddedildi")
                 showNotificationPermissionToast()
             }
         }

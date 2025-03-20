@@ -1,12 +1,20 @@
 package com.cumaliguzel.barberappointment.repository
 
-import com.cumaliguzel.barberappointment.data.*
+import android.util.Log
+import com.cumaliguzel.barberappointment.data.Appointment
+import com.cumaliguzel.barberappointment.data.CompletedAppointment
+import com.cumaliguzel.barberappointment.data.dao.AppointmentDao
+import com.cumaliguzel.barberappointment.data.dao.CompletedAppointmentDao
 import kotlinx.coroutines.flow.Flow
 
 class AppointmentRepository(
     private val appointmentDao: AppointmentDao,
     private val completedAppointmentDao: CompletedAppointmentDao
 ) {
+    
+    companion object {
+        private const val TAG = "AppointmentRepository"
+    }
     
     fun getAllAppointments(): Flow<List<Appointment>> = 
         appointmentDao.getAllAppointments()
@@ -43,4 +51,19 @@ class AppointmentRepository(
 
     fun getCompletedAppointmentsBetweenDates(startDate: String, endDate: String): Flow<List<CompletedAppointment>> =
         completedAppointmentDao.getCompletedAppointmentsBetweenDates(startDate, endDate)
+
+    suspend fun updateAppointmentStatus(appointmentId: Long, newStatus: String) {
+        try {
+            val appointment = getAppointmentById(appointmentId.toInt())
+            if (appointment != null) {
+                val updatedAppointment = appointment.copy(status = newStatus)
+                updateAppointment(updatedAppointment)
+                Log.d(TAG, "✅ Randevu durumu güncellendi: ID=$appointmentId, Yeni Durum=$newStatus")
+            } else {
+                Log.e(TAG, "❌ Durum güncellenemedi: Randevu bulunamadı (ID=$appointmentId)")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "💥 Durum güncellenirken hata: ${e.message}", e)
+        }
+    }
 } 

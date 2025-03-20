@@ -1,54 +1,102 @@
 package com.cumaliguzel.barberappointment.usecase
 
+import android.util.Log
 import com.cumaliguzel.barberappointment.data.Appointment
 import com.cumaliguzel.barberappointment.data.CompletedAppointment
 import com.cumaliguzel.barberappointment.repository.AppointmentRepository
+import com.cumaliguzel.barberappointment.repository.CompletedAppointmentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.catch
 
-class AppointmentUseCase(val repository: AppointmentRepository) {
+class AppointmentUseCase(
+    private val appointmentRepository: AppointmentRepository,
+    private val completedAppointmentRepository: CompletedAppointmentRepository
+) {
+    companion object {
+        private const val TAG = "AppointmentUseCase"
+    }
 
     fun getAppointmentsByDate(date: String): Flow<List<Appointment>> =
-        repository.getAppointmentsByDate(date)
-
-    fun getDailyEarnings(date: String): Flow<Double> =
-        repository.getAppointmentsByDate(date)
-            .map { appointments ->
-                appointments
-                    .filter { it.status == "Completed" }
-                    .sumOf { it.price }
+        appointmentRepository.getAppointmentsByDate(date)
+            .catch { e -> 
+                Log.e(TAG, "💥 Randevuları alırken hata: ${e.message}", e)
+                emit(emptyList())
             }
 
-    suspend fun getAppointmentById(id: Int): Appointment? =
-        repository.getAppointmentById(id)
+    fun getDailyEarnings(date: String): Flow<Double> =
+        getCompletedAppointmentsByDate(date)
+            .map { appointments ->
+                appointments.sumOf { it.price }
+            }
+            .catch { e ->
+                Log.e(TAG, "💥 Günlük kazanç hesaplanırken hata: ${e.message}", e)
+                emit(0.0)
+            }
+
+    suspend fun getAppointmentById(id: Int): Appointment? {
+        return try {
+            appointmentRepository.getAppointmentById(id)
+        } catch (e: Exception) {
+            Log.e(TAG, "💥 ID ile randevu alınırken hata: $id", e)
+            null
+        }
+    }
 
     fun getCompletedAppointmentsBetweenDates(startDate: String, endDate: String): Flow<List<CompletedAppointment>> =
-        repository.getCompletedAppointmentsBetweenDates(startDate, endDate)
+        completedAppointmentRepository.getCompletedAppointmentsBetweenDates(startDate, endDate)
+            .catch { e ->
+                Log.e(TAG, "💥 Tarih aralığındaki tamamlanan randevuları alırken hata: $startDate - $endDate", e)
+                emit(emptyList())
+            }
 
     suspend fun insertAppointment(appointment: Appointment) {
-        repository.insertAppointment(appointment)
+        try {
+            appointmentRepository.insertAppointment(appointment)
+            Log.d(TAG, "✅ Yeni randevu eklendi: ${appointment.name} (${appointment.date}, ${appointment.time})")
+        } catch (e: Exception) {
+            Log.e(TAG, "💥 Randevu eklenirken hata: ${e.message}", e)
+        }
     }
 
     suspend fun updateAppointment(appointment: Appointment) {
-        repository.updateAppointment(appointment)
+        try {
+            appointmentRepository.updateAppointment(appointment)
+            Log.d(TAG, "✅ Randevu güncellendi: ID=${appointment.id}")
+        } catch (e: Exception) {
+            Log.e(TAG, "💥 Randevu güncellenirken hata: ${e.message}", e)
+        }
     }
 
     suspend fun deleteAppointment(appointment: Appointment) {
-        repository.deleteAppointment(appointment)
+        try {
+            appointmentRepository.deleteAppointment(appointment)
+            Log.d(TAG, "✅ Randevu silindi: ID=${appointment.id}")
+        } catch (e: Exception) {
+            Log.e(TAG, "💥 Randevu silinirken hata: ${e.message}", e)
+        }
     }
 
     fun getAllAppointments(): Flow<List<Appointment>> =
-        repository.getAllAppointments()
+        appointmentRepository.getAllAppointments()
+            .catch { e ->
+                Log.e(TAG, "💥 Tüm randevuları alırken hata: ${e.message}", e)
+                emit(emptyList())
+            }
 
-    suspend fun insertCompletedAppointment(appointment: CompletedAppointment) {
-        repository.insertCompletedAppointment(appointment)
+    suspend fun getCompletedAppointmentByOriginalId(originalId: Int): CompletedAppointment? {
+        return try {
+            completedAppointmentRepository.getCompletedAppointmentByOriginalId(originalId)
+        } catch (e: Exception) {
+            Log.e(TAG, "💥 Original ID ile tamamlanan randevu alınırken hata: $originalId", e)
+            null
+        }
     }
 
-    suspend fun getCompletedAppointmentByOriginalId(originalId: Int): CompletedAppointment? =
-        repository.getCompletedAppointmentByOriginalId(originalId)
-
     fun getCompletedAppointmentsByDate(date: String): Flow<List<CompletedAppointment>> =
-        repository.getCompletedAppointmentsByDate(date)
-
-    // Additional appointment-related logic can be added here
+        completedAppointmentRepository.getCompletedAppointmentsByDate(date)
+            .catch { e ->
+                Log.e(TAG, "💥 Tarihe göre tamamlanan randevuları alırken hata: $date", e)
+                emit(emptyList())
+            }
 } 

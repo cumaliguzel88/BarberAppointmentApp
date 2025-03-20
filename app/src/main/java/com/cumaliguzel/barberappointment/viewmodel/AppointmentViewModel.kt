@@ -28,20 +28,22 @@ import com.cumaliguzel.barberappointment.usecase.StatisticsUseCase
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.delay as coroutinesDelay
 import kotlinx.coroutines.CancellationException
+import com.cumaliguzel.barberappointment.BarberApplication
 
 class AppointmentViewModel(application: Application) : AndroidViewModel(application) {
     
-    private val appointmentUseCase: AppointmentUseCase
-    private val operationPriceUseCase: OperationPriceUseCase
-    private val notificationUseCase: NotificationUseCase
-    private val earningsUseCase: EarningsUseCase
-    private val appointmentCountUseCase: AppointmentCountUseCase
-    private val statusUpdateUseCase: StatusUpdateUseCase
-    private val operationManagementUseCase: OperationManagementUseCase
-    private val statisticsUseCase: StatisticsUseCase
-    private val workManager: WorkManager
+    private val app = application as BarberApplication
+    
+    private val appointmentUseCase = app.appointmentUseCase
+    private val operationPriceUseCase = app.operationPriceUseCase
+    private val notificationUseCase = app.notificationUseCase
+    private val earningsUseCase = app.earningsUseCase
+    private val appointmentCountUseCase = app.appointmentCountUseCase
+    private val statusUpdateUseCase = app.statusUpdateUseCase
+    private val operationManagementUseCase = app.operationManagementUseCase
+    private val statisticsUseCase = app.statisticsUseCase
+    private val workManager = app.workManager
     private val _operationPrices = MutableStateFlow<Map<String, Double>>(emptyMap())
-    private val context = application.applicationContext
     
     // İstatistikler için selected date state
     private val _selectedDate = MutableStateFlow(LocalDate.now())
@@ -50,31 +52,13 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
     private var autoUpdateJob: kotlinx.coroutines.Job? = null
 
     init {
-        val database = AppDatabase.getDatabase(application)
-        appointmentUseCase = AppointmentUseCase(
-            AppointmentRepository(
-                database.appointmentDao(),
-                database.completedAppointmentDao()
-            )
-        )
-        operationPriceUseCase = OperationPriceUseCase(
-            OperationPriceRepository(database.operationPriceDao())
-        )
-        workManager = WorkManager.getInstance(context)
-        notificationUseCase = NotificationUseCase(context, workManager)
-        earningsUseCase = EarningsUseCase(appointmentUseCase)
-        appointmentCountUseCase = AppointmentCountUseCase(appointmentUseCase)
-        statusUpdateUseCase = StatusUpdateUseCase(appointmentUseCase.repository)
-        operationManagementUseCase = OperationManagementUseCase(operationPriceUseCase.operationPriceRepository)
-        statisticsUseCase = StatisticsUseCase(appointmentUseCase)
-        
         viewModelScope.launch {
             operationPriceUseCase.getAllOperationPrices().collect { prices ->
                 _operationPrices.value = prices
             }
         }
         
-        notificationUseCase.createNotificationChannel(NOTIFICATION_CHANNEL_ID)
+        notificationUseCase.createNotificationChannel()
         startAutoUpdateTimer()
     }
 
@@ -121,26 +105,37 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
 
     fun addAppointment(appointment: Appointment) {
         viewModelScope.launch {
-            val price = getOperationPrice(appointment.operation)
-            val appointmentWithPrice = appointment.copy(price = price)
-            appointmentUseCase.insertAppointment(appointmentWithPrice)
-            notificationUseCase.scheduleNotification(appointmentWithPrice)
+            try {
+                appointmentUseCase.insertAppointment(appointment)
+                notificationUseCase.scheduleNotification(appointment)
+                Log.d("AppointmentViewModel", "✅ Randevu eklendi: ${appointment.name}")
+            } catch (e: Exception) {
+                Log.e("AppointmentViewModel", "💥 Randevu eklenirken hata: ${e.message}", e)
+            }
         }
     }
 
     fun updateAppointment(appointment: Appointment) {
         viewModelScope.launch {
-            val price = getOperationPrice(appointment.operation)
-            val appointmentWithPrice = appointment.copy(price = price)
-            appointmentUseCase.updateAppointment(appointmentWithPrice)
-            notificationUseCase.scheduleNotification(appointmentWithPrice)
+            try {
+                appointmentUseCase.updateAppointment(appointment)
+                notificationUseCase.scheduleNotification(appointment)
+                Log.d("AppointmentViewModel", "✅ Randevu güncellendi: ${appointment.name}")
+            } catch (e: Exception) {
+                Log.e("AppointmentViewModel", "💥 Randevu güncellenirken hata: ${e.message}", e)
+            }
         }
     }
 
     fun deleteAppointment(appointment: Appointment) {
         viewModelScope.launch {
-            appointmentUseCase.deleteAppointment(appointment)
-            notificationUseCase.cancelNotification(appointment)
+            try {
+                appointmentUseCase.deleteAppointment(appointment)
+                notificationUseCase.cancelNotification(appointment.id)
+                Log.d("AppointmentViewModel", "✅ Randevu silindi: ${appointment.name}")
+            } catch (e: Exception) {
+                Log.e("AppointmentViewModel", "💥 Randevu silinirken hata: ${e.message}", e)
+            }
         }
     }
 
@@ -189,19 +184,7 @@ class AppointmentViewModel(application: Application) : AndroidViewModel(applicat
                         }
                         
                         if (appointment.status != newStatus) {
-                            if (newStatus == "Completed") {
-                                val completedAppointment = CompletedAppointment(
-                                    originalAppointmentId = appointment.id,
-                                    name = appointment.name,
-                                    operation = appointment.operation,
-                                    date = appointment.date,
-                                    time = appointment.time,
-                                    price = appointment.price,
-                                    completedAt = currentDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                                )
-                                appointmentUseCase.insertCompletedAppointment(completedAppointment)
-                            }
-                            appointmentUseCase.updateAppointment(appointment.copy(status = newStatus))
+                            statusUpdateUseCase.updateAppointmentStatus(appointment, newStatus)
                         }
                     } catch (e: Exception) {
                         Log.e("AppointmentViewModel", "Error updating appointment status: ${appointment.id}", e)

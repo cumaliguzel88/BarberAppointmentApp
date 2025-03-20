@@ -1,9 +1,16 @@
 package com.cumaliguzel.barberappointment.data
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "completed_appointments")
+@Entity(
+    tableName = "completed_appointments",
+    indices = [
+        Index(value = ["originalAppointmentId"], unique = true),
+        Index(value = ["date", "time", "name"], unique = true)
+    ]
+)
 data class CompletedAppointment(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
