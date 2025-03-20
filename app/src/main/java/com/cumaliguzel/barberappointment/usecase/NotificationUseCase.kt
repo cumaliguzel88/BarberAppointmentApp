@@ -1,12 +1,15 @@
 package com.cumaliguzel.barberappointment.usecase
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -66,11 +69,16 @@ class NotificationUseCase(private val context: Context, private val workManager:
      * @return Bildirimler etkinse true, değilse false
      */
     fun areNotificationsEnabled(): Boolean {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            notificationManager.areNotificationsEnabled()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID)
+            if (channel?.importance == NotificationManager.IMPORTANCE_NONE) {
+                false
+            } else {
+                NotificationManagerCompat.from(context).areNotificationsEnabled()
+            }
         } else {
-            true // Android 7.0 öncesinde programatik kontrol yok, varsayılan olarak true kabul ediyoruz
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
         }
     }
 
@@ -99,19 +107,24 @@ class NotificationUseCase(private val context: Context, private val workManager:
 
     fun scheduleNotification(appointment: Appointment) {
         try {
+            // Benzersiz bir ID oluştur
+            val notificationId = System.currentTimeMillis().toInt()
+            
             // Randevu zaten tamamlanmışsa bildirim gönderme
             if (appointment.status == "Completed") {
-                Log.d(TAG, "Tamamlanmış randevu için bildirim planlanmadı: ${appointment.id}")
+                Log.d(TAG, "⚠️ Tamamlanmış randevu için bildirim planlanmadı: ${appointment.id}")
                 return
             }
 
-            // Bildirim izinlerini kontrol et
+            // Bildirim izinlerini kontrol et ve gerekirse iste
             if (!areNotificationsEnabled()) {
-                Log.w(TAG, "Bildirimler devre dışı, bildirim planlanamıyor")
+                requestNotificationPermission()
+                Log.w(TAG, "⚠️ Bildirim izinleri eksik, izin isteniyor")
                 return
             }
             
             val notificationData = workDataOf(
+                "notificationId" to notificationId,
                 "appointmentId" to appointment.id,
                 "customerName" to appointment.name,
                 "operation" to appointment.operation,
@@ -148,14 +161,14 @@ class NotificationUseCase(private val context: Context, private val workManager:
                 .build()
 
             workManager.enqueueUniqueWork(
-                "notification_${appointment.id}",
+                "notification_${appointment.id}_${notificationId}",
                 ExistingWorkPolicy.REPLACE,
                 workRequest
             )
 
             Log.d(TAG, """
                 🎯 Bildirim iş kaydı oluşturuldu:
-                ID: ${appointment.id}
+                ID: $notificationId
                 Müşteri: ${appointment.name}
                 Tarih: ${appointment.date}
                 Saat: ${appointment.time}
@@ -181,6 +194,28 @@ class NotificationUseCase(private val context: Context, private val workManager:
         } catch (e: Exception) {
             Log.e(TAG, "Zaman temizlenirken hata: $time", e)
             time // Hata durumunda orijinal değeri döndür
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                "Randevu Bildirimleri",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Yaklaşan randevular için bildirimler"
+                enableLights(true)
+                lightColor = Color.RED
+                enableVibration(true)
+                setShowBadge(true)
+                setBypassDnd(true)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+            
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+            Log.d(TAG, "📢 Bildirim kanalı oluşturuldu")
         }
     }
 
