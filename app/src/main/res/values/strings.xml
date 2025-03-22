@@ -1,4 +1,5 @@
 <resources>
+    <string name="web_client_id">117199434497-63ftoaclqt0pvmbdt00bsl0434pgua51.apps.googleusercontent.com</string>
     <string name="app_name">Barber</string>
     <!-- Alert Text -->
     <string name="ok">OK</string>

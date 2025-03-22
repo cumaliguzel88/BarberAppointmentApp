@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "117199434497",
+    "project_id": "barber-8ae8c",
+    "storage_bucket": "barber-8ae8c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117199434497:android:ab5522d61b496cf48c2100",
+        "android_client_info": {
+          "package_name": "com.cumaliguzel.barberappointment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd75kPPOvYPqPhRU3KBZW0eaXR_xHzgbQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

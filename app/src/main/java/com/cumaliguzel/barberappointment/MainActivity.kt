@@ -31,6 +31,9 @@ import android.util.Log
 import android.view.Gravity
 import com.cumaliguzel.barberappointment.usecase.NotificationUseCase
 import androidx.work.WorkManager
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.cumaliguzel.barberappointment.ui.screens.GoogleSignInPage
 
 class MainActivity : ComponentActivity() {
     private val notificationUseCase: NotificationUseCase by lazy {
@@ -48,7 +51,23 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BarberAppointmentTheme {
-                MainScreen()
+                // Ana navController
+                val navController = rememberNavController()
+                
+                NavHost(
+                    navController = navController,
+                    startDestination = "signinpage" // Başlangıç noktası olarak Google Sign-In sayfasını belirle
+                ) {
+                    // Google Sign-In sayfası
+                    composable("signinpage") {
+                        GoogleSignInPage(navController = navController)
+                    }
+                    // Ana ekran
+                    composable("main") {
+                        MainScreen()
+                    }
+                    // Diğer rotalar...
+                }
             }
         }
     }

@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.cumaliguzel.barberappointment" />
+                  <option name="mobileSdkAppId" value="1:117199434497:android:ab5522d61b496cf48c2100" />
+                  <option name="projectId" value="barber-8ae8c" />
+                  <option name="projectNumber" value="117199434497" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

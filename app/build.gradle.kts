@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -11,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.cumaliguzel.barberappointment"
         minSdk = 27
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -102,6 +103,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    //firebase dep
+    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
+    //firebase firestore
+    implementation("com.google.firebase:firebase-firestore:25.1.1")
+    implementation ("com.google.firebase:firebase-storage:21.0.1")
+    //auth
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.gms:play-services-gcm:17.0.0")
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+
+
 }
 
 
