@@ -35,6 +35,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cumaliguzel.barberappointment.ui.screens.GoogleSignInPage
 import com.cumaliguzel.barberappointment.ui.screens.OnboardingScreen
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : ComponentActivity() {
     private val notificationUseCase: NotificationUseCase by lazy {
@@ -52,12 +56,26 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BarberAppointmentTheme {
+                // Kullanıcı durumunu kontrol et
+                val startDestination = remember {
+                    // Firebase kullanıcısını ve onboarding durumunu kontrol et
+                    val userLoggedIn = Firebase.auth.currentUser != null
+                    val onboardingCompleted = getSharedPreferences("barber_prefs", MODE_PRIVATE)
+                        .getBoolean("onboarding_completed", false)
+                    
+                    when {
+                        userLoggedIn -> "main" // Kullanıcı zaten giriş yapmış
+                        onboardingCompleted -> "signinpage" // Onboarding tamamlanmış, giriş yapılacak
+                        else -> "onboarding" // Yeni kullanıcı, onboarding gösterilecek
+                    }
+                }
+                
                 // Ana navController
                 val navController = rememberNavController()
                 
                 NavHost(
                     navController = navController,
-                    startDestination = "onboarding" // Başlangıç noktası onboarding olarak değişti
+                    startDestination = startDestination // Dinamik başlangıç rotası
                 ) {
                     // Onboarding ekranı
                     composable("onboarding") {
