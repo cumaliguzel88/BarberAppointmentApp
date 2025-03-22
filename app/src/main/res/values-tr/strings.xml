@@ -56,6 +56,24 @@
     <string name="operation_add_eror">Lütfen İşlem Adını Girin</string>
     <string name="add_new_opt">Yeni İşlem Ekle</string>
     <string name="add_new_service">Ekle</string>
-
     <string name="existing_appointments_for_date">%s Tarihindeki Randevular</string>
+
+    <!-- Statistics Screen -->
+    <string name="statistics_title">İstatistikler</string>
+    <string name="today_stats">Bugünkü Tamamlanan Randevular</string>
+    <string name="weekly_stats">Haftalık Randevu İstatistikleri</string>
+
+    <!-- Onboarding Strings -->
+    <string name="onboarding_title_1">Randevularınızı Kolayca Yönetin</string>
+    <string name="onboarding_desc_1">Berber randevularınızı bir dokunuşla oluşturun, düzenleyin ve takip edin.</string>
+    <string name="onboarding_title_2">Zamanında Bildirimler</string>
+    <string name="onboarding_desc_2">Randevularınızdan önce bildirimler alarak hiçbir randevuyu kaçırmayın.</string>
+    <string name="onboarding_title_3">Kazançlarınızı Takip Edin</string>
+    <string name="onboarding_desc_3">Günlük, haftalık ve aylık kazançlarınızı görüntüleyin ve gelirlerinizi analiz edin.</string>
+    <string name="onboarding_title_4">Başlayalım!</string>
+    <string name="onboarding_desc_4">Berber Randevu Uygulaması ile işinizi daha verimli hale getirin.</string>
+    <string name="onboarding_next">İleri</string>
+    <string name="onboarding_back">Geri</string>
+    <string name="onboarding_get_started">Başla</string>
+    <string name="onboarding_skip">Atla</string>
 </resources> 

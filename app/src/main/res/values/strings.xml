@@ -57,11 +57,25 @@
     <string name="operation_add_eror">Please enter an operation name</string>
     <string name="add_new_opt">Add New Operation</string>
     <string name="add_new_service">Add</string>
-
     <string name="existing_appointments_for_date">Appointments for %s</string>
 
     <!-- Statistics Screen -->
-    <string name="statistics_title">İstatistikler</string>
-    <string name="today_stats">Bugünkü Tamamlanan Randevular</string>
-    <string name="weekly_stats">Haftalık Randevu İstatistikleri</string>
+    <string name="statistics_title">Statistics</string>
+    <string name="today_stats">Today Completed Appointments</string>
+    <string name="weekly_stats">Weekly Appointment Statistics</string>
+
+    <!-- Onboarding Strings -->
+    <string name="onboarding_title_1">Easily Manage Your Appointments</string>
+    <string name="onboarding_desc_1">Create, edit, and track your barber appointments with a single touch.</string>
+    <string name="onboarding_title_2">Timely Notifications</string>
+    <string name="onboarding_desc_2">Receive notifications before your appointments so you never miss one.</string>
+    <string name="onboarding_title_3">Track Your Earnings</string>
+    <string name="onboarding_desc_3">View daily, weekly, and monthly earnings and analyze your income.</string>
+    <string name="onboarding_title_4">Let\'s Get Started!</string>
+    <string name="onboarding_desc_4">Make your barber business more efficient with the Barber Appointment App.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_skip">Skip</string>
+
 </resources>

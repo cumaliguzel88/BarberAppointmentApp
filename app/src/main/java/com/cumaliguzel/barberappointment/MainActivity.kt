@@ -34,6 +34,7 @@ import androidx.work.WorkManager
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cumaliguzel.barberappointment.ui.screens.GoogleSignInPage
+import com.cumaliguzel.barberappointment.ui.screens.OnboardingScreen
 
 class MainActivity : ComponentActivity() {
     private val notificationUseCase: NotificationUseCase by lazy {
@@ -56,8 +57,12 @@ class MainActivity : ComponentActivity() {
                 
                 NavHost(
                     navController = navController,
-                    startDestination = "signinpage" // Başlangıç noktası olarak Google Sign-In sayfasını belirle
+                    startDestination = "onboarding" // Başlangıç noktası onboarding olarak değişti
                 ) {
+                    // Onboarding ekranı
+                    composable("onboarding") {
+                        OnboardingScreen(navController = navController)
+                    }
                     // Google Sign-In sayfası
                     composable("signinpage") {
                         GoogleSignInPage(navController = navController)
