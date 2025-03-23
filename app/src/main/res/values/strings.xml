@@ -77,5 +77,22 @@
     <string name="onboarding_back">Back</string>
     <string name="onboarding_get_started">Get Started</string>
     <string name="onboarding_skip">Skip</string>
+    <!-- Onboarding Strings -->
+    <string name="login_toat_message">Login Successful</string>
+    <string name="login_title">Barber Appointment</string>
+    <string name="login_subtitle">Manage your appointments easily and efficiently</string>
+    <string name="login_login">Login</string>
+    <string name="login_google_login">Login with Google Account</string>
+
+    <!-- Guaince Strings First -->
+    <string name="guidance_title_first">Welcome to the Barber Appointment App</string>
+    <string name="guidance_title_second">You cannot use the app without adding services. To continue, go to the Pricing page.</string>
+
+    <!-- Guaince Strings Second -->
+    <string name="guidance_title_first_1">Services Added</string>
+
+
+
+
 
 </resources>

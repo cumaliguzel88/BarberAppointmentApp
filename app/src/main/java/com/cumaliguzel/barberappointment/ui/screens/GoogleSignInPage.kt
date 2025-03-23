@@ -36,6 +36,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 import android.util.Log
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier) {
@@ -69,7 +70,7 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
             scope = scope,
             launcher = null,
             login = {
-                Toast.makeText(context, "Giriş başarılı", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,R.string.login_toat_message, Toast.LENGTH_SHORT).show()
                 navController.navigate("main") {
                     popUpTo("signinpage") { inclusive = true }
                 }
@@ -127,7 +128,7 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             
             // Logo ve başlık bölümü
             Column(
@@ -151,7 +152,7 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
                             slideInVertically(animationSpec = tween(500)) { it }
                 ) {
                     Text(
-                        text = "Berber Randevu",
+                        text = stringResource(id = R.string.login_title),
                         color = Color.White,
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
@@ -168,7 +169,7 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
                             slideInVertically(animationSpec = tween(500)) { it }
                 ) {
                     Text(
-                        text = "Randevularınızı kolayca yönetin\nve işinizi büyütün",
+                        text = stringResource(id = R.string.login_subtitle),
                         color = Color.White.copy(alpha = 0.9f),
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center,
@@ -198,7 +199,7 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Giriş Yap",
+                            text = stringResource(R.string.login_login),
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             color = ColorGreenDark
@@ -207,13 +208,13 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Text(
-                            text = "Google hesabınızla hızlıca giriş yapın",
+                            text = stringResource(R.string.login_google_login),
                             fontSize = 14.sp,
                             color = Color.Gray,
                             textAlign = TextAlign.Center
                         )
                         
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
                         
                         if (isLoading) {
                             CircularProgressIndicator(

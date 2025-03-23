@@ -1,26 +1,25 @@
 package com.cumaliguzel.barberappointment.ui.screens
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cumaliguzel.barberappointment.data.Appointment
-import com.cumaliguzel.barberappointment.data.CompletedAppointment
 import java.time.*
-import java.time.format.DateTimeFormatter
 import com.cumaliguzel.barberappointment.viewmodel.AppointmentViewModel
 import com.cumaliguzel.barberappointment.util.CurrencyFormatter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.cumaliguzel.barberappointment.R
+import com.cumaliguzel.barberappointment.ui.components.AppointmentCards
+import com.cumaliguzel.barberappointment.ui.components.CompletedAppointmentCard
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -291,7 +290,7 @@ fun DailyEarningsScreen(
                 
                 // Show remaining active appointments (filtered to prevent duplicates)
                 items(uniqueActiveAppointments) { appointment ->
-                    AppointmentCard(
+                    AppointmentCards(
                         appointment = appointment,
                         onStatusChange = { isCompleted ->
                             if (isCompleted && !completedAppointmentIds.contains(appointment.id)) {
@@ -308,125 +307,4 @@ fun DailyEarningsScreen(
     }
 }
 
-@Composable
-private fun CompletedAppointmentCard(
-    appointment: CompletedAppointment
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = appointment.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                    Text(
-                        text = "✅ ${appointment.operation}  ➡\uFE0F  ${CurrencyFormatter.formatPriceWithSpace(appointment.price)}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Completed",
-                    tint = MaterialTheme.colorScheme.onSecondary
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = " ${stringResource(R.string.time)} ${LocalTime.parse(appointment.time).format(DateTimeFormatter.ofPattern("HH:mm"))}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-                Text(
-                    text = stringResource(R.string.completed),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondary
-                )
-            }
-        }
-    }
-}
 
-
-@Composable
-private fun AppointmentCard(
-    appointment: Appointment,
-    onStatusChange: (Boolean) -> Unit
-) {
-    var isCheckboxEnabled by remember {
-        mutableStateOf(appointment.status != "Completed")
-    }
-
-    LaunchedEffect(appointment.status) {
-        isCheckboxEnabled = appointment.status != "Completed"
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (appointment.status == "Completed") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = appointment.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                    Text(
-                        text = "✅ ${appointment.operation}  ➡\uFE0F  ${CurrencyFormatter.formatPriceWithSpace(appointment.price)}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-                Checkbox(
-                    checked = appointment.status == "Completed",
-                    onCheckedChange = { isChecked ->
-                        if (isCheckboxEnabled) {
-                            onStatusChange(isChecked)
-                        }
-                    },
-                    enabled = isCheckboxEnabled
-                )
-            }
-            Text(
-                text = " ${stringResource(R.string.time)} ${LocalTime.parse(appointment.time).format(DateTimeFormatter.ofPattern("HH:mm"))}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-        }
-    }
-}

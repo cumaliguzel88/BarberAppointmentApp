@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,11 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -103,7 +99,7 @@ fun OnboardingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(5.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -120,13 +116,11 @@ fun OnboardingScreen(
                     contentDescription = null,
                     modifier = Modifier
                         .height(400.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
+                        .fillMaxWidth(),
                     contentScale = ContentScale.Fit
                 )
             }
-            
-            Spacer(modifier = Modifier.height(32.dp))
+
             
             // Başlık ve açıklama
             Column(
@@ -147,7 +141,6 @@ fun OnboardingScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 24.dp),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                 )
             }
@@ -195,7 +188,7 @@ fun OnboardingScreen(
                             ),
                             modifier = Modifier
                                 .clip(RoundedCornerShape(50))
-                                .height(50.dp)
+                                .height(40.dp)
                                 .width(120.dp)
                         ) {
                             Icon(
@@ -232,20 +225,20 @@ fun OnboardingScreen(
                         ),
                         modifier = Modifier
                             .clip(RoundedCornerShape(50))
-                            .height(56.dp)
+                            .height(40.dp)
                             .width(if (currentPage == onboardingPages.size - 1) 160.dp else 120.dp)
                     ) {
                         if (currentPage == onboardingPages.size - 1) {
                             Text(
                                 text = stringResource(id = R.string.onboarding_get_started),
                                 color = ColorWhite,
-                                fontSize = 16.sp
+                                fontSize = 14.sp
                             )
                         } else {
                             Text(
                                 text = stringResource(id = R.string.onboarding_next),
                                 color = ColorWhite,
-                                fontSize = 16.sp
+                                fontSize = 14.sp
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(

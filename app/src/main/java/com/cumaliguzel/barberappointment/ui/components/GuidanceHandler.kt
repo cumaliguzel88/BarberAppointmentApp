@@ -8,7 +8,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.cumaliguzel.barberappointment.R
 import com.cumaliguzel.barberappointment.ui.navigation.BottomNavItem
 import com.cumaliguzel.barberappointment.viewmodel.GuidanceViewModel
 import kotlinx.coroutines.launch
@@ -29,8 +31,8 @@ fun GuidanceHandler(
     if (showWelcomeDialog && currentRoute == BottomNavItem.Appointments.route) {
         AlertDialog(
             onDismissRequest = { /* Boş bırakılacak */ },
-            title = { Text("Berber Uygulamasına Hoş Geldiniz") },
-            text = { Text("Hizmet eklemeden uygulamayı kullanamazsınız. Devam etmek için Hizmetler sayfasına geçin.") },
+            title = { Text(stringResource(R.string.guidance_title_first)) },
+            text = { Text(stringResource(R.string.guidance_title_first_1)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -53,7 +55,7 @@ fun GuidanceHandler(
                         }
                     }
                 ) {
-                    Text("Tamam")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )
@@ -63,7 +65,7 @@ fun GuidanceHandler(
     if (showServicesDialog && currentRoute == BottomNavItem.Pricing.route) {
         AlertDialog(
             onDismissRequest = { /* Boş bırakılacak */ },
-            title = { Text("Hizmetlerinizi Ekleyin") },
+            title = { Text(stringResource(R.string.guidance_title_second)) },
             text = { 
                 Text("""
                     Hizmetlerinizi ve ücretlerini şimdi ekleyin.
@@ -82,7 +84,7 @@ fun GuidanceHandler(
                         guidanceViewModel.onServicesDialogDismissed()
                     }
                 ) {
-                    Text("Tamam")
+                    Text(stringResource(R.string.ok))
                 }
             }
         )

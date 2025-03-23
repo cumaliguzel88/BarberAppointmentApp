@@ -76,4 +76,25 @@
     <string name="onboarding_back">Geri</string>
     <string name="onboarding_get_started">Başla</string>
     <string name="onboarding_skip">Atla</string>
+
+    <!-- Login Strings -->
+    <string name="login_toat_message">Giriş başarılı</string>
+    <string name="login_title">Berber Randevu</string>
+    <string name="login_subtitle">Randevularınızı kolayca yönetin ve işinizi büyütün</string>
+    <string name="login_login">Giriş Yap</string>
+    <string name="login_google_login">Google hesabınız ile Giriş Yapın</string>
+
+    <!-- Guaince Strings First -->
+    <string name="guidance_title_first">Berber Uygulamasına Hoş Geldiniz</string>
+    <string name="guidance_title_second">Hizmet eklemeden uygulamayı kullanamazsınız. Devam etmek için Hizmetler sayfasına geçin.</string>
+
+    <!-- Guaince Strings Second -->
+    <string name="guidance_title_first_1">Hizmetler Eklendi</string>
+
+
+
+
+
+
+
 </resources> 

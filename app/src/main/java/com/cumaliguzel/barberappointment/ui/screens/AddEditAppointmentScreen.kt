@@ -18,13 +18,11 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.cumaliguzel.barberappointment.R
+import com.cumaliguzel.barberappointment.ui.components.ExistingAppointmentCard
 import com.cumaliguzel.barberappointment.ui.components.IOSStyleTimePicker
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -352,83 +350,3 @@ fun AddEditAppointmentScreen(
         }
     }
 }
-
-@Composable
-private fun ExistingAppointmentCard(
-    appointment: Appointment
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = when (appointment.status) {
-                "Completed" -> MaterialTheme.colorScheme.primary
-                else -> MaterialTheme.colorScheme.secondary
-            }
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = appointment.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = appointment.operation,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-                
-                Text(
-                    text = "${LocalTime.parse(appointment.time).format(DateTimeFormatter.ofPattern("HH:mm"))} - ${
-                        LocalTime.parse(appointment.time).plusMinutes(30).format(DateTimeFormatter.ofPattern("HH:mm"))
-                    }",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.tertiary
-
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = CurrencyFormatter.formatPriceWithSpace(appointment.price),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.tertiary
-                )
-                
-                if (appointment.status == "Completed") {
-                    Surface(
-                        shape = MaterialTheme.shapes.small,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    ) {
-                        Text(
-                            text = stringResource(R.string.completed),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                }
-            }
-        }
-    }
-} 
