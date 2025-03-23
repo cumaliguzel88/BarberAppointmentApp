@@ -20,12 +20,15 @@ import kotlinx.coroutines.delay
 import com.cumaliguzel.barberappointment.util.CurrencyFormatter
 import androidx.compose.ui.res.stringResource
 import com.cumaliguzel.barberappointment.R
+import com.cumaliguzel.barberappointment.viewmodel.GuidanceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OperationPricesScreen(
     onNavigateBack: () -> Unit,
-    viewModel: AppointmentViewModel = viewModel()
+    onFabClick: (() -> Unit) -> Unit,
+    viewModel: AppointmentViewModel = viewModel(),
+    guidanceViewModel: GuidanceViewModel = viewModel()
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -36,6 +39,14 @@ fun OperationPricesScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var showSuccessMessage by remember { mutableStateOf(false) }
+    
+    val fabClickAction = {
+        showAddDialog = true
+    }
+    
+    LaunchedEffect(Unit) {
+        onFabClick(fabClickAction)
+    }
     
     val existingPrices by viewModel.operationPrices.collectAsState()
     val operations by remember(existingPrices) { 
@@ -84,7 +95,7 @@ fun OperationPricesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showAddDialog = true },
+                onClick = fabClickAction,
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
@@ -307,13 +318,18 @@ fun OperationPricesScreen(
         }
 
         if (showSuccessMessage) {
-            LaunchedEffect(Unit) {
-                delay(2000)
-                showSuccessMessage = false
+            LaunchedEffect(showSuccessMessage) {
+                if (showSuccessMessage) {
+                    delay(2000)
+                    showSuccessMessage = false
+                    guidanceViewModel.resetNavigationState()
+                }
             }
             CustomSnackbar(
-                message = "Price updated successfully",
-                onDismiss = { showSuccessMessage = false }
+                message = "Servis başarıyla eklendi",
+                onDismiss = { 
+                    showSuccessMessage = false
+                }
             )
         }
 

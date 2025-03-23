@@ -39,6 +39,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.cumaliguzel.barberappointment.viewmodel.GuidanceViewModel
 
 class MainActivity : ComponentActivity() {
     private val notificationUseCase: NotificationUseCase by lazy {
@@ -178,7 +181,10 @@ fun MainScreen() {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
+    
+    // GuidanceViewModel
+    val guidanceViewModel: GuidanceViewModel = viewModel()
+    
     Scaffold(
         bottomBar = {
             if (currentRoute in items.map { it.route }) {
@@ -205,8 +211,12 @@ fun MainScreen() {
                             selected = currentRoute == item.route,
                             onClick = {
                                 if (currentRoute != item.route) {
+                                    // Tüm navigasyonlarda rehberlik durumunu resetle
+                                    guidanceViewModel.resetNavigationState()
+                                    
+                                    // Basit navigasyon - kompleks koşulları kaldıralım
                                     navController.navigate(item.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
                                         launchSingleTop = true
