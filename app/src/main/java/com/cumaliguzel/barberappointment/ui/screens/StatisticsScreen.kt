@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cumaliguzel.barberappointment.R
+import com.cumaliguzel.barberappointment.ui.theme.ColorGreen
+import com.cumaliguzel.barberappointment.ui.theme.ColorGreenLight
 import com.cumaliguzel.barberappointment.viewmodel.AppointmentViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -75,7 +77,10 @@ fun StatisticsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 ) {
                     Column(
                         modifier = Modifier
@@ -95,7 +100,8 @@ fun StatisticsScreen(
                         ) {
                             Text(
                                 text = selectedDate.format(dateFormatter),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             StatCircle(count = todayCompletedAppointments)
                         }
@@ -162,7 +168,8 @@ fun WeeklyStatItem(date: LocalDate, count: Int) {
         Text(
             text = formattedDay,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.onBackground
         )
         
         // Progress bar
@@ -206,7 +213,10 @@ fun WeeklyStatsChart(weeklyStats: List<Pair<LocalDate, Int>>) {
             .fillMaxWidth()
             .height(200.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     ) {
         Column(
             modifier = Modifier
@@ -224,23 +234,23 @@ fun WeeklyStatsChart(weeklyStats: List<Pair<LocalDate, Int>>) {
                     val height = size.height
                     val barSpacing = width / weeklyStats.size // Her çubuk için eşit alan
                     
-                    // Izgara çizgileri
+                    // Izgara çizgileri - Tema renklerine uygun hale getirildi
                     val strokeWidth = 1.dp.toPx()
                     drawLine(
-                        color = Color.LightGray,
+                        color = Color.White,
                         start = Offset(0f, height),
                         end = Offset(width, height),
                         strokeWidth = strokeWidth
                     )
                     
-                    // Her bir veri için bar çiz
+                    // Her bir veri için bar çiz - Kırmızı yerine tema rengi kullanıldı
                     weeklyStats.forEachIndexed { index, (_, count) ->
                         val barHeight = (count.toFloat() / maxCount) * height
                         val barCenter = barSpacing * index + (barSpacing / 2) // Çubuğun merkezi
                         val barWidth = barSpacing * 0.6f // Çubuk genişliği
                         
                         drawLine(
-                            color = Color.Red,
+                            color = Color.Red, // ColorGreen veya MaterialTheme.colorScheme.primary de kullanılabilir
                             start = Offset(barCenter, height),
                             end = Offset(barCenter, height - barHeight),
                             strokeWidth = barWidth
@@ -260,7 +270,8 @@ fun WeeklyStatsChart(weeklyStats: List<Pair<LocalDate, Int>>) {
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
                         fontSize = 10.sp,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
