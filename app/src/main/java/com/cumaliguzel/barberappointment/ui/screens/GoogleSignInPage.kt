@@ -3,33 +3,38 @@ package com.cumaliguzel.barberappointment.ui.screens
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.cumaliguzel.barberappointment.R
 import com.cumaliguzel.barberappointment.auth.GoogleSignInUtils
 import com.cumaliguzel.barberappointment.ui.components.GoogleSignInButton
+import com.cumaliguzel.barberappointment.ui.theme.ColorGreen
+import com.cumaliguzel.barberappointment.ui.theme.ColorGreenDark
+import com.cumaliguzel.barberappointment.ui.theme.ColorWhite
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.delay
 import android.util.Log
 
 @Composable
@@ -39,7 +44,22 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
     val currentUser = Firebase.auth.currentUser
     var isLoading by remember { mutableStateOf(false) }
     
-    // ✅ Launcher'ı LaunchedEffect'ten ÖNCE tanımla
+    // Animasyon için değişkenler
+    var showTitle by remember { mutableStateOf(false) }
+    var showSubtitle by remember { mutableStateOf(false) }
+    var showButton by remember { mutableStateOf(false) }
+    
+    // Animasyonları sırayla başlat
+    LaunchedEffect(key1 = true) {
+        delay(100)
+        showTitle = true
+        delay(300)
+        showSubtitle = true
+        delay(300)
+        showButton = true
+    }
+    
+    // Launcher tanımla
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -51,13 +71,13 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
             login = {
                 Toast.makeText(context, "Giriş başarılı", Toast.LENGTH_SHORT).show()
                 navController.navigate("main") {
-                    popUpTo("signinpage") { inclusive = true } // Geriye dönmeyi engelle
+                    popUpTo("signinpage") { inclusive = true }
                 }
             }
         )
     }
 
-    // LaunchedEffect launcher'ı SONRA kullanır
+    // Kullanıcı zaten giriş yapmışsa ana ekrana yönlendir
     LaunchedEffect(currentUser) {
         if (currentUser != null) {
             Log.d("GoogleSignInPage", "Kullanıcı zaten giriş yapmış: ${currentUser.displayName}")
@@ -65,42 +85,168 @@ fun GoogleSignInPage(navController: NavController, modifier: Modifier = Modifier
                 popUpTo("signinpage") { inclusive = true }
             }
         } else {
-            // Kullanıcı giriş yapmamışsa, otomatik olarak Google Sign-In sürecini başlat
-            isLoading = true
-            val signInIntent = GoogleSignInUtils.getGoogleSignInIntent(context)
-            launcher.launch(signInIntent)
+            // Otomatik giriş akışını buradan kaldırdık - kullanıcı artık butonla giriş yapacak
+            // Bu şekilde tasarımımızı görebilecek
         }
     }
 
+    // Arka plan gradyant
     Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        ColorGreen,
+                        ColorGreenDark
+                    )
+                )
+            )
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        // Dekoratif desen
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .align(Alignment.TopCenter)
         ) {
-            if (isLoading) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Google ile giriş yapılıyor...",
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center
+            Image(
+                painter = painterResource(id = R.drawable.onboaring_first), // Bir onboarding resmini dekoratif olarak kullanıyoruz
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                alpha = 0.3f
+            )
+        }
+        
+        // Ana içerik
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Spacer(modifier = Modifier.height(50.dp))
+            
+            // Logo ve başlık bölümü
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Logo
+                Image(
+                    painter = painterResource(id = R.drawable.barber_app_logo), // Kendi uygulamanızın logosunu buraya ekleyin
+                    contentDescription = "App Logo",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(RoundedCornerShape(25.dp))
+
                 )
-            } else {
-                // Eğer otomatik giriş başarısız olursa, kullanıcı manuel olarak giriş yapabilir
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Başlık
+                AnimatedVisibility(
+                    visible = showTitle,
+                    enter = fadeIn(animationSpec = tween(500)) + 
+                            slideInVertically(animationSpec = tween(500)) { it }
+                ) {
+                    Text(
+                        text = "Berber Randevu",
+                        color = Color.White,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Alt başlık
+                AnimatedVisibility(
+                    visible = showSubtitle,
+                    enter = fadeIn(animationSpec = tween(500)) + 
+                            slideInVertically(animationSpec = tween(500)) { it }
+                ) {
+                    Text(
+                        text = "Randevularınızı kolayca yönetin\nve işinizi büyütün",
+                        color = Color.White.copy(alpha = 0.9f),
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+                }
+            }
+            
+            // Google Sign-In bölümü
+            AnimatedVisibility(
+                visible = showButton,
+                enter = fadeIn(animationSpec = tween(500)) + 
+                        slideInVertically(animationSpec = tween(500)) { it / 2 }
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 32.dp),
+                    colors = CardDefaults.cardColors(containerColor = ColorWhite),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp, horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Giriş Yap",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ColorGreenDark
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = "Google hesabınızla hızlıca giriş yapın",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                color = ColorGreen,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Giriş yapılıyor...",
+                                fontSize = 16.sp,
+                                color = ColorGreen
+                            )
+                        } else {
+                            GoogleSignInButton(
+                                navController = navController,
+                                launcher = launcher,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
+                }
+            }
+            
+            // Alt bilgi
+            AnimatedVisibility(
+                visible = showButton,
+                enter = fadeIn(animationSpec = tween(700))
+            ) {
                 Text(
-                    text = "Google hesabınızla giriş yapın",
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center,
+                    text = "© 2025 Berber Randevu",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 12.sp,
                     modifier = Modifier.padding(bottom = 16.dp)
-                )
-                GoogleSignInButton(
-                    navController = navController,
-                    launcher = launcher,
-                    modifier = Modifier.padding(8.dp)
                 )
             }
         }

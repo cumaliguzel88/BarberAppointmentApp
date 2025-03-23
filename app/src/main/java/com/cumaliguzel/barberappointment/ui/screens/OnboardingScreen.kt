@@ -119,7 +119,7 @@ fun OnboardingScreen(
                     painter = painterResource(id = onboardingPages[currentPage].imageRes),
                     contentDescription = null,
                     modifier = Modifier
-                        .height(300.dp)
+                        .height(400.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp),
                     contentScale = ContentScale.Fit
@@ -137,7 +137,7 @@ fun OnboardingScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -146,6 +146,7 @@ fun OnboardingScreen(
                     text = stringResource(id = onboardingPages[currentPage].descriptionRes),
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 24.dp),
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                 )
@@ -182,7 +183,7 @@ fun OnboardingScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 24.dp),
+                        .padding(bottom = 20.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     // Geri butonu (ilk sayfada gizli)
@@ -194,7 +195,7 @@ fun OnboardingScreen(
                             ),
                             modifier = Modifier
                                 .clip(RoundedCornerShape(50))
-                                .height(56.dp)
+                                .height(50.dp)
                                 .width(120.dp)
                         ) {
                             Icon(
