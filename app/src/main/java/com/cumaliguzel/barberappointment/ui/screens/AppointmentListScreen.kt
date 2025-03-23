@@ -45,20 +45,23 @@ fun AppointmentListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-
                 title = { Text(stringResource(R.string.appointments_title), color = MaterialTheme.colorScheme.tertiary) },
-                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary),
-                actions = {
-                    IconButton(onClick = onAddAppointment) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(R.string.add_appointment),
-                            tint = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                }
+                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
             )
-        }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddAppointment,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.tertiary
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_appointment)
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -174,12 +177,9 @@ private fun AppointmentCard(
     onDelete: () -> Unit,
     viewModel: AppointmentViewModel = viewModel()
 ) {
-    var isCompleted by remember { mutableStateOf(appointment.status == "Completed") }
-    var isCheckboxEnabled by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    val currentDate = LocalDate.now()
-    val appointmentDate = LocalDate.parse(appointment.date)
-
+    val isCompleted = appointment.status == "Completed"
+    
     // Delete Dialog
     if (showDeleteDialog) {
         AlertDialog(
@@ -202,12 +202,6 @@ private fun AppointmentCard(
                 }
             }
         )
-    }
-
-    // Checkbox'ın durumunu kontrol et
-    LaunchedEffect(appointment.status, appointmentDate, currentDate) {
-        isCompleted = appointment.status == "Completed"
-        isCheckboxEnabled = !isCompleted && appointmentDate.isEqual(currentDate)
     }
 
     Card(
@@ -268,26 +262,14 @@ private fun AppointmentCard(
                             tint = MaterialTheme.colorScheme.tertiary
                         )
                     }
-                    Checkbox(
-                        checked = isCompleted,
-                        onCheckedChange = { checked ->
-                            if (isCheckboxEnabled && checked) {
-                                isCompleted = true
-                                isCheckboxEnabled = false
-                                viewModel.updateAppointmentStatus(
-                                    appointment = appointment,
-                                    newStatus = "Completed"
-                                )
-                            }
-                        },
-                        enabled = isCheckboxEnabled,
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colorScheme.primary,
-                            uncheckedColor = MaterialTheme.colorScheme.tertiary,
-                            disabledCheckedColor = MaterialTheme.colorScheme.primary,
-                            disabledUncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    if (isCompleted) {
+                        Icon(
+                            Icons.Default.CheckCircle,
+                            contentDescription = "Tamamlandı",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp)
                         )
-                    )
+                    }
                 }
             }
         }
