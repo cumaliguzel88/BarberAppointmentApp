@@ -42,6 +42,12 @@ import com.google.firebase.ktx.Firebase
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.cumaliguzel.barberappointment.viewmodel.GuidanceViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import com.cumaliguzel.barberappointment.ui.screens.SplashScreen
+import com.cumaliguzel.barberappointment.ui.components.AppNavigationBar
 
 class MainActivity : ComponentActivity() {
     private val notificationUseCase: NotificationUseCase by lazy {
@@ -59,6 +65,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BarberAppointmentTheme {
+                // Splash Screen state
+                var showSplash by remember { mutableStateOf(true) }
+                
                 // Kullanıcı durumunu kontrol et
                 val startDestination = remember {
                     // Firebase kullanıcısını ve onboarding durumunu kontrol et
@@ -73,26 +82,30 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 
-                // Ana navController
-                val navController = rememberNavController()
-                
-                NavHost(
-                    navController = navController,
-                    startDestination = startDestination // Dinamik başlangıç rotası
-                ) {
-                    // Onboarding ekranı
-                    composable("onboarding") {
-                        OnboardingScreen(navController = navController)
+                if (showSplash) {
+                    SplashScreen(onSplashFinished = { showSplash = false })
+                } else {
+                    // Ana navController
+                    val navController = rememberNavController()
+                    
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination // Dinamik başlangıç rotası
+                    ) {
+                        // Onboarding ekranı
+                        composable("onboarding") {
+                            OnboardingScreen(navController = navController)
+                        }
+                        // Google Sign-In sayfası
+                        composable("signinpage") {
+                            GoogleSignInPage(navController = navController)
+                        }
+                        // Ana ekran
+                        composable("main") {
+                            MainScreen()
+                        }
+                        // Diğer rotalar...
                     }
-                    // Google Sign-In sayfası
-                    composable("signinpage") {
-                        GoogleSignInPage(navController = navController)
-                    }
-                    // Ana ekran
-                    composable("main") {
-                        MainScreen()
-                    }
-                    // Diğer rotalar...
                 }
             }
         }
@@ -188,45 +201,12 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             if (currentRoute in items.map { it.route }) {
-                NavigationBar(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                ) {
-                    items.forEach { item ->
-                        NavigationBarItem(
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.tertiary,
-                                unselectedIconColor = MaterialTheme.colorScheme.tertiary,
-                                selectedTextColor = MaterialTheme.colorScheme.tertiary,
-                                unselectedTextColor = MaterialTheme.colorScheme.tertiary,
-                                indicatorColor = MaterialTheme.colorScheme.onSecondary,
-                            ),
-                            alwaysShowLabel = false,
-                            icon = {
-                                Icon(
-                                    painter = painterResource(id = item.iconRes),
-                                    contentDescription = item.title
-                                )
-                            },
-                            label = { Text(item.title) },
-                            selected = currentRoute == item.route,
-                            onClick = {
-                                if (currentRoute != item.route) {
-                                    // Tüm navigasyonlarda rehberlik durumunu resetle
-                                    guidanceViewModel.resetNavigationState()
-                                    
-                                    // Basit navigasyon - kompleks koşulları kaldıralım
-                                    navController.navigate(item.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
+                AppNavigationBar(
+                    navController = navController,
+                    currentRoute = currentRoute,
+                    items = items,
+                    guidanceViewModel = guidanceViewModel
+                )
             }
         }
     ) { paddingValues ->

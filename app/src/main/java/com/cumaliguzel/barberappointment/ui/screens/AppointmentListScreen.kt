@@ -39,6 +39,14 @@ fun AppointmentListScreen(
     val appointments by viewModel.appointments.collectAsState(initial = emptyList())
     var selectedDate by rememberSaveable { mutableStateOf(LocalDate.now()) }
 
+    // Filtrelenen öğeleri memo ile tut
+    val filteredAppointments = remember(appointments, selectedDate) {
+        appointments.filter { appointment ->
+            val appointmentDate = LocalDate.parse(appointment.date, DateTimeFormatter.ISO_DATE)
+            appointmentDate.isEqual(selectedDate)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -85,10 +93,6 @@ fun AppointmentListScreen(
                 }
             }
 
-            val filteredAppointments = appointments.filter { appointment ->
-                appointment.date == selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
-            }.sortedBy { it.time }
-
             if (filteredAppointments.isEmpty()) {
                 Column(
                     modifier = Modifier
@@ -113,14 +117,19 @@ fun AppointmentListScreen(
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
                 ) {
-                    items(filteredAppointments) { appointment ->
-                        AppointmentCard( appointment = appointment,
+                    items(
+                        items = filteredAppointments,
+                        key = { it.id } // Key kullanımı performansı artırır
+                    ) { appointment ->
+                        AppointmentCard(
+                            appointment = appointment,
                             onEdit = { onEditAppointment(appointment.id) },
-                            onDelete = { viewModel.deleteAppointment(appointment) })
+                            onDelete = { viewModel.deleteAppointment(appointment) }
+                        )
                     }
                 }
             }

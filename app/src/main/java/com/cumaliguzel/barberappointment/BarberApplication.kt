@@ -17,6 +17,11 @@ import com.cumaliguzel.barberappointment.usecase.OperationManagementUseCase
 import com.cumaliguzel.barberappointment.usecase.StatisticsUseCase
 import android.content.SharedPreferences
 import com.cumaliguzel.barberappointment.usecase.OperationPriceUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.joinAll
 
 class BarberApplication : Application(), Configuration.Provider {
     // Veritabanı
@@ -80,4 +85,49 @@ class BarberApplication : Application(), Configuration.Provider {
         get() = Configuration.Builder()
             .setMinimumLoggingLevel(Log.INFO)
             .build()
+
+    override fun onCreate() {
+        super.onCreate()
+        
+        // Diğer uygulamanızda yapılan işlemler...
+        
+        // Ön yükleme yapalım
+        preloadAppData()
+    }
+
+    private fun preloadAppData() {
+        Log.d("BarberApplication", "🚀 Uygulama verilerini ön yükleme başladı")
+        
+        // Asenkron bir şekilde verilerin yüklenmesi
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Paralel işlemler başlat
+                val jobs = listOf(
+                    launch {
+                        Log.d("BarberApplication", "📊 Randevuları yükleme başladı")
+                        val appointments = appointmentRepository.getAllAppointments().firstOrNull()
+                        Log.d("BarberApplication", "📊 Randevular yüklendi: ${appointments?.size ?: 0} adet")
+                    },
+                    
+                    launch {
+                        Log.d("BarberApplication", "📊 Tamamlanmış randevuları yükleme başladı")
+                        val completed = completedAppointmentRepository.getAllCompletedAppointments().firstOrNull()
+                        Log.d("BarberApplication", "�� Tamamlanmış randevular yüklendi: ${completed?.size ?: 0} adet")
+                    },
+                    
+                    launch {
+                        Log.d("BarberApplication", "📊 Operasyon fiyatlarını yükleme başladı")
+                        val prices = operationPriceRepository.getAllOperationPrices().firstOrNull()
+                        Log.d("BarberApplication", "📊 Operasyon fiyatları yüklendi: ${prices?.size ?: 0} adet")
+                    }
+                )
+                
+                // Tüm işlemlerin tamamlanmasını bekle
+                jobs.joinAll()
+                Log.d("BarberApplication", "✅ Ön yükleme tamamlandı")
+            } catch (e: Exception) {
+                Log.e("BarberApplication", "💥 Veri ön yüklemesi sırasında hata: ${e.message}")
+            }
+        }
+    }
 } 
