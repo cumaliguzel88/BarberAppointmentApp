@@ -1,6 +1,7 @@
 package com.cumaliguzel.barberappointment.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,12 +25,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cumaliguzel.barberappointment.R
 import com.cumaliguzel.barberappointment.ui.components.StatCircle
-import com.cumaliguzel.barberappointment.ui.components.WeeklyStatItem
 import com.cumaliguzel.barberappointment.ui.components.WeeklyStatsChart
+import com.cumaliguzel.barberappointment.ui.components.WeeklyStatsPieChart
 import com.cumaliguzel.barberappointment.viewmodel.AppointmentViewModel
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -62,61 +65,88 @@ fun StatisticsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Bugünün istatistikleri
+            // Bugünkü tamamlanan randevular
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+                        modifier = Modifier.padding(16.dp)
                     ) {
+                        // Başlık solda hizalı
                         Text(
-                            text = stringResource(R.string.today_stats),
+                            text = "Bugün Tamamlanan Randevular",
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
+                        
+                        // StatCircle ortada
+                        Box(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            contentAlignment = Alignment.Center
+                        ) {
+                            StatCircle(
+                                count = todayCompletedAppointments,
+                                title = "Tamamlanan"
+                            )
+                        }
+                        
+                        // Tarih ortada
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = selectedDate.format(dateFormatter),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            StatCircle(count = todayCompletedAppointments)
                         }
                     }
                 }
             }
             
-            // Haftalık istatistikler başlığı
+            // Haftalık istatistikler grafiği (Yeni PieChart burada kullanılıyor)
             item {
-                Text(
-                    text = stringResource(R.string.weekly_stats),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.primary
+                WeeklyStatsPieChart(
+                    weeklyData = weeklyCompletedAppointments
                 )
             }
             
-            // Grafik gösterimi
+            // Haftalık randevu grafiği (Bar chart olarak kalacak)
             item {
-                WeeklyStatsChart(weeklyCompletedAppointments)
-            }
-            
-            // Haftalık istatistikler liste olarak
-            items(weeklyCompletedAppointments) { (date, count) ->
-                WeeklyStatItem(date = date, count = count)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Haftalık Randevu Grafiği",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        
+                        WeeklyStatsChart(
+                            weeklyStats = weeklyCompletedAppointments,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        )
+                    }
+                }
             }
         }
     }

@@ -25,12 +25,15 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun WeeklyStatsChart(weeklyStats: List<Pair<LocalDate, Int>>) {
+fun WeeklyStatsChart(
+    weeklyStats: List<Pair<LocalDate, Int>>,
+    modifier: Modifier = Modifier
+) {
     val maxCount = weeklyStats.maxOfOrNull { it.second }?.let { max -> maxOf(max, 1) } ?: 1
     val locale = Locale.getDefault()
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(200.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -71,7 +74,7 @@ fun WeeklyStatsChart(weeklyStats: List<Pair<LocalDate, Int>>) {
                         val barWidth = barSpacing * 0.6f // Çubuk genişliği
 
                         drawLine(
-                            color = Color.Red, // ColorGreen veya MaterialTheme.colorScheme.primary de kullanılabilir
+                            color = Color.Red,
                             start = Offset(barCenter, height),
                             end = Offset(barCenter, height - barHeight),
                             strokeWidth = barWidth
