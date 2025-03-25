@@ -18,8 +18,8 @@ import com.cumaliguzel.barberappointment.util.CurrencyFormatter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.cumaliguzel.barberappointment.R
-import com.cumaliguzel.barberappointment.ui.components.AppointmentCards
 import com.cumaliguzel.barberappointment.ui.components.CompletedAppointmentCard
+import com.cumaliguzel.barberappointment.ui.components.AppointmentCard
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -290,16 +290,10 @@ fun DailyEarningsScreen(
                 
                 // Show remaining active appointments (filtered to prevent duplicates)
                 items(uniqueActiveAppointments) { appointment ->
-                    AppointmentCards(
+                    AppointmentCard(
                         appointment = appointment,
-                        onStatusChange = { isCompleted ->
-                            if (isCompleted && !completedAppointmentIds.contains(appointment.id)) {
-                                viewModel.updateAppointmentStatus(
-                                    appointment,
-                                    "Completed"
-                                )
-                            }
-                        }
+                        onEdit = { /* edit işlemi */ },
+                        onDelete = { viewModel.deleteAppointment(appointment) }
                     )
                 }
             }
