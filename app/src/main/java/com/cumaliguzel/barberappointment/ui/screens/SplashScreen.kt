@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +34,21 @@ fun SplashScreen(
     val uiPreloaded = remember { mutableStateOf(false) }
     val animationFinished = remember { mutableStateOf(false) }
     val minimumTimeElapsed = remember { mutableStateOf(false) }
+    
+    // 360 derece dönme animasyonu için infiniteTransition
+    val infiniteTransition = rememberInfiniteTransition(label = "scissorsRotation")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 2000,
+                easing = LinearEasing
+            ),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rotation"
+    )
     
     // Log her şeyi takip edecek
     LaunchedEffect(key1 = true) {
@@ -146,7 +162,9 @@ fun SplashScreen(
                 text = "✂️",  // Makas emojisi
                 fontSize = 80.sp,
                 color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.scale(scale.value)
+                modifier = Modifier
+                    .scale(scale.value)
+                    .rotate(rotation) // 360 derece dönme animasyonu ekledik
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -157,14 +175,6 @@ fun SplashScreen(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.tertiary
-            )
-            
-            // Yükleme durumunu göster
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.size(32.dp)
             )
         }
     }
