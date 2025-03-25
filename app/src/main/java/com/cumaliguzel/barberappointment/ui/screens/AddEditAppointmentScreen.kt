@@ -18,6 +18,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -85,6 +86,7 @@ fun AddEditAppointmentScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
+                shape = RoundedCornerShape(15.dp),
                 value = name,
                 onValueChange = { name = it },
                 label = { Text(text = stringResource(R.string.customer_name)) },
@@ -93,6 +95,7 @@ fun AddEditAppointmentScreen(
 
             Box {
                 OutlinedTextField(
+                    shape = RoundedCornerShape(15.dp),
                     value = operation,
                     onValueChange = {},
                     label = { Text(text = stringResource(R.string.select_service)) },
@@ -151,6 +154,7 @@ fun AddEditAppointmentScreen(
             }
 
             OutlinedTextField(
+                shape = RoundedCornerShape(15.dp),
                 value = selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 onValueChange = {},
                 label = { Text(text = stringResource(R.string.select_date)) },
@@ -164,6 +168,7 @@ fun AddEditAppointmentScreen(
             )
 
             OutlinedTextField(
+                shape = RoundedCornerShape(15.dp),
                 value = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                 onValueChange = {},
                 label = { Text(text = stringResource(R.string.select_time)) },

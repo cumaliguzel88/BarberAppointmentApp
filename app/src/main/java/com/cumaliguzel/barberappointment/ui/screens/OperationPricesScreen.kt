@@ -1,3 +1,5 @@
+package com.cumaliguzel.barberappointment.ui.screens
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,18 +41,18 @@ fun OperationPricesScreen(
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var showSuccessMessage by remember { mutableStateOf(false) }
-    
+
     val fabClickAction = {
         showAddDialog = true
     }
-    
+
     LaunchedEffect(Unit) {
         onFabClick(fabClickAction)
     }
-    
+
     val existingPrices by viewModel.operationPrices.collectAsState()
-    val operations by remember(existingPrices) { 
-        mutableStateOf(existingPrices.keys.toList().sortedWith(compareBy { 
+    val operations by remember(existingPrices) {
+        mutableStateOf(existingPrices.keys.toList().sortedWith(compareBy {
             when(it) {
                 "\uD83D\uDC87\uD83C\uDFFB\u200D♂\uFE0F Saç Traşı" -> 0
                 "\uD83E\uDDD4\uD83C\uDFFB\u200D♂\uFE0F Sakal Traşı" -> 1
@@ -115,7 +117,7 @@ fun OperationPricesScreen(
             items(operations) { operation ->
                 var showEditDialog by remember { mutableStateOf(false) }
                 var editedPrice by remember { mutableStateOf("") }
-                
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -161,7 +163,7 @@ fun OperationPricesScreen(
                                         tint = MaterialTheme.colorScheme.tertiary
                                     )
                                 }
-                                
+
                                 Checkbox(
                                     checked = selectedOperations.contains(operation),
                                     onCheckedChange = { isChecked ->
@@ -179,7 +181,7 @@ fun OperationPricesScreen(
 
                 if (showEditDialog) {
                     AlertDialog(
-                        onDismissRequest = { 
+                        onDismissRequest = {
                             showEditDialog = false
                             editedPrice = ""
                         },
@@ -214,7 +216,7 @@ fun OperationPricesScreen(
                         },
                         dismissButton = {
                             TextButton(
-                                onClick = { 
+                                onClick = {
                                     showEditDialog = false
                                     editedPrice = ""
                                 }
@@ -327,7 +329,7 @@ fun OperationPricesScreen(
             }
             CustomSnackbar(
                 message = "Servis başarıyla eklendi",
-                onDismiss = { 
+                onDismiss = {
                     showSuccessMessage = false
                 }
             )
@@ -335,8 +337,8 @@ fun OperationPricesScreen(
 
         if (showDeleteDialog) {
             AlertDialog(
-                onDismissRequest = { 
-                    showDeleteDialog = false 
+                onDismissRequest = {
+                    showDeleteDialog = false
                     operationToDelete = ""
                 },
                 title = { Text("Operasyon Silme") },
@@ -355,7 +357,7 @@ fun OperationPricesScreen(
                 },
                 dismissButton = {
                     TextButton(
-                        onClick = { 
+                        onClick = {
                             showDeleteDialog = false
                             operationToDelete = ""
                         }
@@ -366,4 +368,4 @@ fun OperationPricesScreen(
             )
         }
     }
-} 
+}
