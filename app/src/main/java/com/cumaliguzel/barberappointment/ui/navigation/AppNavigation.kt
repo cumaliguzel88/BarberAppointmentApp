@@ -1,6 +1,5 @@
 package com.cumaliguzel.barberappointment.ui.navigation
 
-import OperationPricesScreen
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
