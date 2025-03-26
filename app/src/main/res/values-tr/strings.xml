@@ -18,7 +18,9 @@
     <string name="no">Hayır</string>
     <string name="edit">Düzenle</string>
     <string name="delete">Sil</string>
-    <string name="completed">Tamamlandı</string>
+    <string name="date">Tarih</string>
+    <string name="times">Saat</string>
+    <string name="choose_date">Choose Date</string>
 
     <!-- AddEditAppointmentScreen -->
     <string name="new_appointment">Yeni Randevu</string>
@@ -62,6 +64,8 @@
     <string name="statistics_title">İstatistikler</string>
     <string name="today_stats">Bugünkü Tamamlanan Randevular</string>
     <string name="weekly_stats">Haftalık Randevu İstatistikleri</string>
+    <string name="done">Tamamlanan</string>
+    <string name="statistic_bar_chart">Haftalık Randevu Grafiği</string>
 
     <!-- Onboarding Strings -->
     <string name="onboarding_title_1">Randevularınızı Kolayca Yönetin</string>
@@ -94,6 +98,18 @@
     <!--Emty Appointment Screen -->
     <string name="emty_screen">Bugün için randevu yok</string>
     <string name="emty_screen_description">Randevu eklemek için + butonuna basabilirsiniz</string>
+
+    <!--Pie Chart Comp-->
+    <string name="pie_chart_title">Haftalık istatistik henüz mevcut değil</string>
+    <string name="pie_chart_description">Tamamlanan randevular burada görüntülenecek</string>
+    <string name="pie_chart_weekly">Haftalık Randevu Dağılımı</string>
+    <string name="pie_chart_appoinment">Randevu</string>
+
+    <!--Appoinment Card-->
+  <string name="appointment_card_alert_title">Randevu</string>"
+  <string name="appointment_card_alert_description">Bu randevuyu silmek istediğinizden emin misiniz?</string>"
+    <string name="completed">Tamamlandı</string>
+    <string name="pending">Bekleyen</string>
 
 
 

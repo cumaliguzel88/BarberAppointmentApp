@@ -18,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cumaliguzel.barberappointment.R
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
@@ -66,7 +68,7 @@ fun WeeklyStatsPieChart(
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
-                    text = "Haftalık istatistik henüz mevcut değil",
+                    text = stringResource(R.string.pie_chart_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -75,7 +77,7 @@ fun WeeklyStatsPieChart(
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Text(
-                    text = "Tamamlanan randevular burada görüntülenecek",
+                    text =  stringResource(R.string.pie_chart_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center
@@ -121,7 +123,7 @@ fun WeeklyStatsPieChart(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Haftalık Randevu Dağılımı",
+                text = stringResource(R.string.pie_chart_weekly),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -185,7 +187,7 @@ fun WeeklyStatsPieChart(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "Randevu",
+                        text = stringResource(R.string.pie_chart_appoinment),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -19,7 +19,9 @@
     <string name="no">No</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="completed">Completed</string>
+    <string name="date">Date</string>
+    <string name="times">Time</string>
+    <string name="choose_date">Tarih Seçin</string>
 
     <!-- AddEditAppointmentScreen -->
     <string name="new_appointment">New Appointment</string>
@@ -63,6 +65,8 @@
     <string name="statistics_title">Statistics</string>
     <string name="today_stats">Today Completed Appointments</string>
     <string name="weekly_stats">Weekly Appointment Statistics</string>
+    <string name="done">Done</string>
+    <string name="statistic_bar_chart">Weekly Appointment Chart</string>
 
     <!-- Onboarding Strings -->
     <string name="onboarding_title_1">Easily Manage Your Appointments</string>
@@ -94,6 +98,17 @@
     <!--Emty Appointment Screen -->
     <string name="emty_screen">No appointments for today</string>
     <string name="emty_screen_description">You can press the + button to add an appointment.</string>
+
+    <!--Pie Chart Comp-->
+    <string name="pie_chart_title">Weekly statistics not yet available</string>
+    <string name="pie_chart_description">Completed appointments will be displayed here.</string>
+    <string name="pie_chart_weekly">Weekly Appointment Distribution</string>
+    <string name="pie_chart_appoinment">Appointment</string>
+    <!--Appoinment Card-->
+    <string name="appointment_card_alert_title">Randevu</string>"
+    <string name="appointment_card_alert_description">Bu randevuyu silmek istediğinizden emin misiniz?</string>"
+    <string name="completed">Tamamlandı</string>
+    <string name="pending">Bekleyen</string>
 
 
 

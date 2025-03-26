@@ -14,9 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.cumaliguzel.barberappointment.R
 import com.cumaliguzel.barberappointment.data.Appointment
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -59,8 +61,8 @@ fun AppointmentCard(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Randevu Silme") },
-            text = { Text("Bu randevuyu silmek istediğinizden emin misiniz?") },
+            title = { Text(stringResource(R.string.appointment_card_alert_title)) },
+            text = { Text(stringResource(R.string.appointment_card_alert_description)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -68,12 +70,12 @@ fun AppointmentCard(
                         showDeleteDialog = false
                     }
                 ) {
-                    Text("Evet")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Hayır")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -199,8 +201,8 @@ fun AppointmentCard(
                 // Durum metni
                 Text(
                     text = when {
-                        isCompleted -> "Tamamlandı"
-                        isPending -> "Bekliyor"
+                        isCompleted -> stringResource(R.string.completed)
+                        isPending -> stringResource(R.string.pending)
                         else -> "İptal Edildi"
                     },
                     style = MaterialTheme.typography.bodySmall,

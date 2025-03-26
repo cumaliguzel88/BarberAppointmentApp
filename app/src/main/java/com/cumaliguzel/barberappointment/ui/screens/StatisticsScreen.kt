@@ -75,7 +75,7 @@ fun StatisticsScreen(
                     ) {
                         // Başlık solda hizalı
                         Text(
-                            text = "Bugün Tamamlanan Randevular",
+                            text = stringResource(R.string.today_stats),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -90,7 +90,7 @@ fun StatisticsScreen(
                         ) {
                             StatCircle(
                                 count = todayCompletedAppointments,
-                                title = "Tamamlanan"
+                                title = stringResource(R.string.done)
                             )
                         }
                         
@@ -130,7 +130,7 @@ fun StatisticsScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = "Haftalık Randevu Grafiği",
+                            text = stringResource(R.string.statistic_bar_chart),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 16.dp)
