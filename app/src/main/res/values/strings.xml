@@ -91,6 +91,11 @@
     <!-- Guaince Strings Second -->
     <string name="guidance_title_first_1">Services Added</string>
 
+    <!--Emty Appointment Screen -->
+    <string name="emty_screen">No appointments for today</string>
+    <string name="emty_screen_description">You can press the + button to add an appointment.</string>
+
+
 
 
 

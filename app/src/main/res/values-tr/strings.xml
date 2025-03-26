@@ -91,6 +91,9 @@
     <!-- Guaince Strings Second -->
     <string name="guidance_title_first_1">Hizmetler Eklendi</string>
 
+    <!--Emty Appointment Screen -->
+    <string name="emty_screen">Bugün için randevu yok</string>
+    <string name="emty_screen_description">Randevu eklemek için + butonuna basabilirsiniz</string>
 
 
 
