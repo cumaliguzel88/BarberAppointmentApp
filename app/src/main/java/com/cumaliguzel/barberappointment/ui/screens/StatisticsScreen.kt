@@ -62,55 +62,6 @@ fun StatisticsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Bugünkü tamamlanan randevular
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        // Başlık solda hizalı
-                        Text(
-                            text = stringResource(R.string.today_stats),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 16.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        
-                        // StatCircle ortada
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            StatCircle(
-                                count = todayCompletedAppointments,
-                                title = stringResource(R.string.done)
-                            )
-                        }
-                        
-                        // Tarih ortada
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = selectedDate.format(dateFormatter),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-            
             // Haftalık istatistikler grafiği (Yeni PieChart burada kullanılıyor)
             item {
                 WeeklyStatsPieChart(
