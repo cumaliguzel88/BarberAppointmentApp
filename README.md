@@ -74,13 +74,6 @@ Sadece "Saç Tıraşı" değil, "Lazer Epilasyon", "Medikal Maske", "Tırnak Bak
 
 ---
 
-## 📱 Uygulama Simgesi & Tanıtım Görseli
-
-![Logo](./screenshots/barber_app_logo.jpeg)  
-![Feature Graphic](./screenshots/feature_graphic_berber.jpeg)
-
-
-
 ## 💌 Geri Bildirim
 
 Her türlü önerin, hatan, geri bildirimin varsa bize yaz:  
